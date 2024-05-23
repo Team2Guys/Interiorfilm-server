@@ -1,0 +1,131 @@
+const { users } = require('../models/usr');
+let jwt = require('jsonwebtoken');
+require('dotenv').config();
+let { comparePassword } = require('../utils/comparepswd')
+
+const signup = async (req, res) => {
+    try {
+        const email = req.body.email;
+        const existingUser = await users.findOne({ email: email });
+
+        if (!existingUser) {
+            const newUser = new users(req.body);
+            const savedUser = await newUser.save();
+            const { password, ...userWithoutPassword } = savedUser._doc;
+
+            return res.status(200).json({
+                message: 'You have successfully signed up',
+                user: userWithoutPassword,
+            });
+        } else {
+            return res.status(401).json({
+                message: 'User already exists',
+            });
+        }
+    } catch (error) {
+        console.error('Error during signup:', error);
+        return res.status(500).json({
+            message: 'Internal server error',
+        });
+    }
+};
+
+
+const login = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            throw new Error('Email and password are required');
+        }
+
+        const user = await users.findOne({ email: email });
+        if (user) {
+            const result = await comparePassword(password, user.password);
+            if (result) {
+                const token = jwt.sign({ email: email }, process.env.secKey);
+                const { password, ...userWithoutPassword } = user._doc
+                return res.status(200).json({
+                    message: 'Login successful',
+                    token,
+                    user: userWithoutPassword,
+
+                });
+            } else {
+                return res.status(401).json({
+                    message: 'Invalid username or password',
+                });
+            }
+        } else {
+            return res.status(404).json({
+                message: 'User not found',
+            });
+        }
+    } catch (error) {
+        console.error('Error during login:', error.message);
+        return res.status(500).json({
+            error: error.message,
+        });
+    }
+};
+
+const userHandler = async (req, res) => {
+    try {
+        const email = req.body.email
+
+        if(!email)  return res.status(400).json({
+            error:"email is required"
+        });
+        const user = await users.findOne({ email: email });
+        if (!user) {
+            return res.status(400).json({
+                error: "user with given email doesn't exist"
+
+            });
+
+        }
+        await user.save();
+        return res.status(200).json({
+            message: 'user found',
+            user
+        });
+    } catch (error) {
+        return res.status(400).json({
+            error: error.message,
+
+        });
+    }
+}
+
+const passwordReset2 = async (req, res) => {
+    try {
+        const user = await users.findOne({ email: req.body.email });
+        if (!user) {
+            return res.status(400).json({
+                message: "user with given email doesn't exist"
+
+            });
+        }
+
+        user.password = req.body.password;
+        await user.save();
+        return res.status(200).json({
+            message: 'Password is reseted!',
+                    });
+    } catch (error) {
+
+        return res.status(500).json({
+            error: error.message,
+
+        });
+    }
+};
+
+
+
+module.exports = {
+    signup,
+    login,
+    passwordReset2,
+    userHandler
+
+};
