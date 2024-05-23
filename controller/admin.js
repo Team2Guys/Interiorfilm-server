@@ -1,4 +1,4 @@
-const {Admin} = require('../model/adminModel');
+const {Admin} = require('../models/adminModel');
 let jwt = require('jsonwebtoken');
 let seckey = 'seckey';
 require('dotenv').config();
