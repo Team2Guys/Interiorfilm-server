@@ -15,7 +15,8 @@ app.use(express.json());
 
 const allowedOrigins = [
   'http://localhost:3000', 
-  'https://your-deployed-link.com' 
+  'http://localhost:3001', 
+  'https://interiorfilm.vercel.app/' 
 ];
 
 // Custom CORS options
