@@ -148,26 +148,19 @@ exports.getAdminHandler  =async (req, res) => {
 };
 
 
-
 exports.superAdminLoginhandler =async (req, res) => {
   try {
     let AdminEmail = process.env.AdminEmail;
     let Adminpassword = process.env.adminpassord
     
     const { email, password } = req.body;
-
-
-    // Check if the email and password are provided
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
     }
-    // Check if an admin with the provided email exists
     const admin = AdminEmail ===email
     if (!admin) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
-
-    // Check if the password matches
     const isPasswordValid =  Adminpassword=== password
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid email or password' });
