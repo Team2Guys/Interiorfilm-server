@@ -13,6 +13,7 @@ const PORT = 3200;
 app.use(cors());
 app.use(express.json());
 
+
 const allowedOrigins = [
   'http://localhost:3000', 
   'http://localhost:3001', 
