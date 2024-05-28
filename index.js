@@ -4,6 +4,8 @@ const app = express();
 const usrRouter = require("./routes/users");
 const productRouter = require('./routes/productRoutes')
 const adminRouter = require("./routes/admin");
+let cookieParser = require('cookie-parser');  
+
 
 
 const connect = require("./helper/connect");
@@ -13,6 +15,7 @@ const PORT = 3200;
 app.use(cors());
 app.use(express.json());
 
+app.use(cookieParser());   
 
 const allowedOrigins = [
   'http://localhost:3000', 

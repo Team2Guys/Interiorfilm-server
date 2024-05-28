@@ -37,17 +37,27 @@ const login = async (req, res) => {
         if (!email || !password) {
             throw new Error('Email and password are required');
         }
+        console.log(email, "email")
 
         const user = await users.findOne({ email: email });
         if (user) {
             const result = await comparePassword(password, user.password);
             if (result) {
-                const token = jwt.sign({ email: email }, process.env.secKey);
+                const token = jwt.sign({ email: email }, process.env.secKey, { expiresIn: '24h' });
+
                 const { password, ...userWithoutPassword } = user._doc
+
+    res.cookie('token', token, {
+        httpOnly: true,
+        secure: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        sameSite: 'strict',
+      });
+      console.log(res.cookie, "cookie")
                 return res.status(200).json({
                     message: 'Login successful',
-                    token,
                     user: userWithoutPassword,
+                    token
 
                 });
             } else {
