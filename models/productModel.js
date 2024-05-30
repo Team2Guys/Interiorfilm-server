@@ -19,11 +19,9 @@ const productSchema = new Schema({
   hoverImageUrl: {
     public_id: {
       type: String,
-      required: true
     },
     imageUrl: {
       type: String,
-      required: true
     }
   },
   description: {
@@ -61,17 +59,14 @@ const productSchema = new Schema({
   modelDetails: [{
     name: {
       type: String,
-      required: true
     },
     detail: {
       type: String,
-      required: true
     }
   }],
   spacification: [{
     specsDetails: {
       type: String,
-      required: true
     }
   }],
   createdAt: {
