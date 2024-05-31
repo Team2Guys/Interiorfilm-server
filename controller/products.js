@@ -327,11 +327,12 @@ exports.getPaginateProducts = async (req, res) => {
     console.log(req.query.page , "page")
 
     try {
-        const { products, totalPages, currentPage } = await dburl.getPaginatedUsers(page, limit);
+        const { products, totalPages, currentPage,totalProducts } = await dburl.getPaginatedUsers(page, limit);
      return   res.status(200).json({
         products,
             totalPages,
             currentPage,
+            totalProducts
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
