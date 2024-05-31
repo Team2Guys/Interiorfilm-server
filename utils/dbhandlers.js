@@ -14,6 +14,7 @@ const getPaginatedUsers = async (page, limit) => {
       products,
       totalPages: Math.ceil(count / limit),
       currentPage: page,
+      totalProducts:count
     };
   } catch (error) {
     console.error('Error fetching paginated users:', error);
