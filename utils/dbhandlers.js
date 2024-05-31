@@ -1,25 +1,26 @@
-const Products = require('../models/productModel'); // adjust the path as necessary
+const Products = require('../models/productModel.js');
 
 const getPaginatedUsers = async (page, limit) => {
+  let skipLimit = (page - 1) * limit;
+
   try {
     const products = await Products.find()
-      .skip((page - 1) * limit)
-      .limit(limit) 
-      .exec(); 
+      .skip(skipLimit)
+      .limit(limit)
+      .exec();
+    
     const count = await Products.countDocuments();
-
     return {
-    products,
-      totalPages: Math.ceil(count / limit), 
+      products,
+      totalPages: Math.ceil(count / limit),
       currentPage: page,
     };
   } catch (error) {
+    console.error('Error fetching paginated users:', error);
     throw new Error('Error fetching paginated users: ' + error.message);
   }
 };
 
-
 module.exports = {
-    getPaginatedUsers
-  
-  };
+  getPaginatedUsers,
+};

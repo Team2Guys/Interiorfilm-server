@@ -17,7 +17,17 @@ cloudinary.config({
 
 exports.addProduct = async (req, res) => {
     console.log('req body', req.body)
-    try{
+    try {
+        const name = req.body.name
+        const code = req.body.code;
+        let existingProduct = await Productdb.findOne({
+            $or: [{ name: name }, { code: code }]
+        });
+
+
+    if(existingProduct) return res.status(400 ).json({
+     error: "Product Already Exist",
+ })
         if (!req.body) return res.status(404).json({ message: "no product found" })
         const newProduct = new Productdb(req.body)
         await newProduct.save();
@@ -25,14 +35,14 @@ exports.addProduct = async (req, res) => {
             message: "products has been saved"
         })
     }
-   catch(err){
-    console.log(err, 'err occured')
-    return res.status(500).json({
-        error: "Internal server error",
-        err
-    })
-   }
-   
+    catch (err) {
+        console.log(err, 'err occured')
+        return res.status(500).json({
+            error: "Internal server error",
+            err
+        })
+    }
+
 }
 
 exports.getAllproducts = async (req, res) => {
@@ -121,7 +131,7 @@ exports.getProduct = async (req, res) => {
 
 exports.AddCategory = async (req, res) => {
     try {
-        const { name , posterImageUrl} = req.body;
+        const { name, posterImageUrl } = req.body;
         if (!req.body) return res.status(401).json({ error: 'Data not found' });
         const existingCategory = await CategoryDb.findOne({ name });
         if (existingCategory) {
@@ -232,7 +242,7 @@ exports.addProductImage = async (req, res) => {
 
 
             const result = await cloudinary.uploader.upload(file.path, {
-                folder: "2guysProducts" // Specify the dynamic folder name
+                folder: "interiorFilms"
             });
             console.log('File uploaded successfully:', result);
             let Image_detail = {
@@ -283,46 +293,48 @@ const transporter = nodemailer.createTransport({
     port: 587,
     secure: false,
     auth: {
-      user: 'faadsardar123@gmail.com',
-      pass: 'ddah dgfc kwwa mrtt',
+        user: 'faadsardar123@gmail.com',
+        pass: 'ddah dgfc kwwa mrtt',
     },
-  });
- 
-  exports.sendEmailHandler = async(req, res)=> {
+});
+
+exports.sendEmailHandler = async (req, res) => {
     const { name, email, message } = req.body;
-  
+
     const mailOptions = {
-      from: email,
-      to: 'faadsardar123@gmail.com',
-      subject: 'New message from contact form',
-      text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
+        from: email,
+        to: 'faadsardar123@gmail.com',
+        subject: 'New message from contact form',
+        text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
     };
-  
-    transporter.sendMail(mailOptions, function(error, info) {
-      if (error) {
-        console.error('Error sending email:', error);
-        res.status(500).send('Error sending email');
-      } else {
-        console.log('Email sent:', info.response);
-        res.send('Email sent successfully');
-      }
+
+    transporter.sendMail(mailOptions, function (error, info) {
+        if (error) {
+            console.error('Error sending email:', error);
+            res.status(500).send('Error sending email');
+        } else {
+            console.log('Email sent:', info.response);
+            res.send('Email sent successfully');
+        }
     });
-  };
-  
+};
 
 
-  exports.getPaginateProducts  =async (req, res) => {
-    const page = parseInt(req.query.page) || 1; 
-    const limit = parseInt(req.query.limit) || 10; 
-  
+
+exports.getPaginateProducts = async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+    console.log(req.query.page , "page")
+
     try {
-      const { users, totalPages, currentPage } = await dburl.getPaginatedUsers(page, limit);
-      res.status(200).json({
-        users,
-        totalPages,
-        currentPage,
-      });
+        const { products, totalPages, currentPage } = await dburl.getPaginatedUsers(page, limit);
+     return   res.status(200).json({
+        products,
+            totalPages,
+            currentPage,
+        });
     } catch (error) {
-      res.status(500).json({ message: error.message });
+        res.status(500).json({ message: error.message });
+
     }
-  }
+}

@@ -28,7 +28,11 @@ const productSchema = new Schema({
     type: String,
     required: true
   },
-  price: {
+  salePrice: {
+    type: Number,
+    required: true
+  },
+  purchasePrice: {
     type: Number,
     required: true
   },
@@ -77,7 +81,7 @@ const productSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-starRating : {
+  starRating : {
   type: String,
 
 },
@@ -85,10 +89,15 @@ reviews : {
   type: String,
   
 },
+code : {
+  type: String,
+  require: true,
+  unique: true
+  
+},
 sizes : [{
   type: String,
-}
-  
+}, 
 ]
 });
 
