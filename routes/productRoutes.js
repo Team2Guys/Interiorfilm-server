@@ -12,6 +12,7 @@ const ApiEndPoints = {
     updateProduct: "/updateProduct/:id",
     getPaginateProducts: "/getPaginateProducts",
 
+    
     // Categories
     AddCategory: "/AddCategory",
     getAllcategories: "/getAllcategories",
