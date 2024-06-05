@@ -34,6 +34,27 @@ const adminSchema = new Schema({
     canDeleteCategory: {
         type: Boolean,
         default: false
+    },
+
+    canCheckProfit: {
+        type: Boolean,
+        default: false
+    },
+    canCheckVisitors: {
+        type: Boolean,
+        default: false
+    },
+    profilePhoto: {
+        public_id: {
+          type: String,
+        },
+        imageUrl: {
+          type: String,
+        }
+      },
+    role:{
+    type:String,
+    default:'Admin'
     }
 });
 

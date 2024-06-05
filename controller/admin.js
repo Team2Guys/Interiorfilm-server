@@ -57,8 +57,8 @@ exports.DeleteAdminHandler =async (req, res) => {
 exports.editAdminHandler  = async (req, res) => {
   try {
     const adminId = req.params.id;
-    const { firstName, lastName, email, password, canAddProduct, canDeleteProduct, canAddCategory, canDeleteCategory } = req.body;
-    if(!firstName || !lastName ||!email ||!password) res.status(401).json({ message: "Mondatory fields are required" });
+    const { firstName, lastName, email, canAddProduct, canDeleteProduct, canAddCategory, canDeleteCategory,profilePhoto } = req.body;
+    if(!firstName || !lastName ||!email ) res.status(401).json({ message: "Mondatory fields are required" });
 
 
     let existingAdmin = await Admin.findById(adminId);
@@ -70,11 +70,11 @@ exports.editAdminHandler  = async (req, res) => {
     existingAdmin.firstName = firstName;
     existingAdmin.lastName = lastName;
     existingAdmin.email = email;
-    existingAdmin.password = password;
     existingAdmin.canAddProduct = canAddProduct;
     existingAdmin.canDeleteProduct = canDeleteProduct;
     existingAdmin.canAddCategory = canAddCategory;
     existingAdmin.canDeleteCategory = canDeleteCategory;
+    existingAdmin.profilePhoto = profilePhoto;
 
     // Save the updated admin to the database
     const updatedAdmin = await existingAdmin.save();
@@ -139,8 +139,10 @@ exports.getAdminHandler  =async (req, res) => {
       return res.status(401).json({ message: 'user not found' });
     }
    
-    const { password, ...userWithoutPassword } = admin;
-    res.status(200).json({messsage: "User found", user: userWithoutPassword._doc });
+    const { password, ...userWithoutPassword } = admin._doc;
+
+    console.log(userWithoutPassword, 'userWithoutPassword')
+   return    res.status(200).json({messsage: "User found", user: userWithoutPassword });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
