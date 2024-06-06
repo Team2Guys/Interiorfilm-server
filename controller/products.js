@@ -25,9 +25,9 @@ exports.addProduct = async (req, res) => {
         });
 
 
-    if(existingProduct) return res.status(400 ).json({
-     error: "Product Already Exist",
- })
+        if (existingProduct) return res.status(400).json({
+            error: "Product Already Exist",
+        })
         if (!req.body) return res.status(404).json({ message: "no product found" })
         const newProduct = new Productdb(req.body)
         await newProduct.save();
@@ -324,12 +324,12 @@ exports.sendEmailHandler = async (req, res) => {
 exports.getPaginateProducts = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 6;
-    console.log(req.query.page , "page")
+    console.log(req.query.page, "page")
 
     try {
-        const { products, totalPages, currentPage,totalProducts } = await dburl.getPaginatedUsers(page, limit);
-     return   res.status(200).json({
-        products,
+        const { products, totalPages, currentPage, totalProducts } = await dburl.getPaginatedUsers(page, limit);
+        return res.status(200).json({
+            products,
             totalPages,
             currentPage,
             totalProducts

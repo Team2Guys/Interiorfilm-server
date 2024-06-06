@@ -130,8 +130,6 @@ const passwordReset2 = async (req, res) => {
     }
 };
 
-
-
 module.exports = {
     signup,
     login,
