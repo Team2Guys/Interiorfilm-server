@@ -177,14 +177,14 @@ exports.superAdminLoginhandler = async (req, res) => {
     const token = jwt.sign({ email: email }, seckey);
 
     // Send the token in the response
-    res.status(200).json({ token, messsage: "User has been successfully loggedIn" });
+    res.status(200).json({ token, messsage: "User has been successfully loggedIn", Admin });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
 
-getOverallProfit = async () => {
+const getOverallProfit = async () => {
   try {
     const sales = await Sale.find();
     const overallProfit = sales.reduce((total, sale) => {
@@ -204,18 +204,39 @@ getOverallProfit = async () => {
   }
 };
 
+const getTotalSales = async () => {
+  try {
+    const sales = await Sale.find();
+    console.log("Sales data:", sales);
+
+    const totalSales = sales.reduce((total, sale) => {
+      const saleTotal = sale.products.reduce((productTotal, product) => {
+        return productTotal + (product.totalPrice || 0);
+      }, 0);
+      return total + saleTotal;
+    }, 0);
+
+    console.log(`Total Sales: ${totalSales}`);
+    return totalSales
+  } catch (error) {
+
+    throw new Error(error.message)
+  }
+};
+
+
+
 exports.geRecords = async (req, res) => {
   try {
-    console.log('function is workking')
-
     const totalAdmins = await Admin.countDocuments();
     const totalProducts = await Productdb.countDocuments();
     const totalCategories = await CategoryDb.countDocuments();
     const totalUsers = await users.countDocuments();
     const totalProfit = await getOverallProfit()
+    const totalSales = await getTotalSales()
 
 
-    return res.status(200).json({ totalAdmins, totalProducts, totalCategories, totalUsers,totalProfit });
+    return res.status(200).json({ totalAdmins, totalProducts, totalCategories, totalUsers, totalProfit, totalSales });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -239,7 +260,7 @@ exports.recordSale = async (req, res) => {
         colorName: item.colorName,
         count: item.count,
         totalPrice: item.totalPrice,
-        purchasePrice: item.purchasePrice 
+        purchasePrice: item.purchasePrice
 
       };
     }));
@@ -260,7 +281,7 @@ exports.recordSale = async (req, res) => {
 
     await sale.save();
 
-   return  res.status(201).json(sale);
+    return res.status(201).json(sale);
   } catch (error) {
 
     console.log(error, "error")

@@ -16,14 +16,33 @@ cloudinary.config({
 });
 
 exports.addProduct = async (req, res) => {
-    console.log('req body', req.body)
     try {
         const name = req.body.name
         const code = req.body.code;
-        let existingProduct = await Productdb.findOne({
-            $or: [{ name: name }, { code: code }]
-        });
 
+        console.log(code, "code", "name", name)
+        if(!name || !code) return res.status(400).json({
+            error: "Product name or code not found",
+        })
+        let totalQuntity = req.body.totalStockQuantity 
+        let existingProduct = await Productdb.findOne({$or: [{ name: name }, { code: code }]});
+
+console.log("existingProduct", existingProduct)
+
+        if(!totalQuntity){
+            const variantStockQuantities = req.body.variantStockQuantities || [];
+            let totalStockQuantity = 0;
+        
+            variantStockQuantities.forEach(variant => {
+                if (variant.quantity && !isNaN(variant.quantity)) {
+                    totalStockQuantity += parseInt(variant.quantity, 10);
+                }
+            });
+            req.body.totalStockQuantity = totalStockQuantity;
+        
+        
+        }
+    
 
         if (existingProduct) return res.status(400).json({
             error: "Product Already Exist",

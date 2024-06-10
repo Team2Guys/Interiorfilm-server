@@ -95,6 +95,17 @@ code : {
   unique: true
   
 },
+totalStockQuantity: {
+  type: Number,
+},
+variantStockQuantities: [{
+  variant: {
+    type: String,
+  },
+  quantity: {
+    type: Number,
+  }
+}],
 sizes : [{
   type: String,
 }, 
