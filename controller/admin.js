@@ -150,9 +150,10 @@ exports.getAdminHandler = async (req, res) => {
     console.log(userWithoutPassword, 'userWithoutPassword')
     return res.status(200).json({ messsage: "User found", user: userWithoutPassword });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: error.message });
   }
 };
+
 
 
 exports.superAdminLoginhandler = async (req, res) => {
@@ -161,6 +162,11 @@ exports.superAdminLoginhandler = async (req, res) => {
     let Adminpassword = process.env.adminpassord
 
     const { email, password } = req.body;
+    const admincredential = {
+      fullname: process.env.superAdmin_name || "Muhammad Faad",
+      email: process.env.AdminEmail,
+      role: "super-Admin"
+    }
     if (!email || !password) {
       return res.status(400).json({ message: 'Email and password are required' });
     }
@@ -177,11 +183,36 @@ exports.superAdminLoginhandler = async (req, res) => {
     const token = jwt.sign({ email: email }, seckey);
 
     // Send the token in the response
-    res.status(200).json({ token, messsage: "User has been successfully loggedIn", Admin });
+    res.status(200).json({ token, messsage: "User has been successfully loggedIn", user: admincredential });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+exports.getSuperAdminHandler = async (req, res) => {
+
+  try {
+    const admincredential = {
+      fullname: process.env.superAdmin_name || "Muhammad Faad",
+      email: process.env.AdminEmail,
+      role: "super-Admin"
+    }
+    return res.status(200).json({ messsage: "User found", user: admincredential });
+
+
+
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+
+  }
+
+
+
+
+}
+
+
 
 
 const getOverallProfit = async () => {

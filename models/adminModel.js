@@ -43,7 +43,12 @@ const adminSchema = new Schema({
     canCheckVisitors: {
         type: Boolean,
         default: false
+    }, 
+     canViewUsers: {
+        type: Boolean,
+        default: false
     },
+
     profilePhoto: {
         public_id: {
           type: String,
