@@ -2,10 +2,6 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const saleSchema = new Schema({
-    username: {
-        type: String,
-        required: true
-    },
     usermail: {
         type: String,
         required: String
@@ -25,7 +21,11 @@ const saleSchema = new Schema({
         colorName: String,
         count: Number,
         totalPrice: Number,
-        purchasePrice:Number
+        purchasePrice: Number,
+        date: {
+            type: Date,
+            default: Date.now
+        }
     }],
     date: {
         type: Date,

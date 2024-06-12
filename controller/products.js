@@ -146,6 +146,9 @@ exports.getProduct = async (req, res) => {
 
 }
 
+
+
+
 // Category 
 
 exports.AddCategory = async (req, res) => {
@@ -358,4 +361,7 @@ exports.getPaginateProducts = async (req, res) => {
 
     }
 }
+
+
+
 

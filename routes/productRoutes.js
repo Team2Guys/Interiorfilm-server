@@ -36,6 +36,10 @@ router.delete(ApiEndPoints.deleteProduct, controller.deleteProduct)
 router.post(ApiEndPoints.addProductImage, upload.array('image'), controller.addProductImage)
 router.post(ApiEndPoints.updateProduct, controller.productHanler)
 router.delete(ApiEndPoints.Removeimage, controller.deleteProductImage)
+
+
+
+// email sender 
 router.post(ApiEndPoints.email, controller.sendEmailHandler)
 
 

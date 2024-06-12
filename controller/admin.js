@@ -3,6 +3,8 @@ const Productdb = require('../models/productModel.js');
 const CategoryDb = require('../models/categoriesModel.js');
 const { users } = require('../models/usr');
 const Sale = require('../models/salesModel.js');
+const dburl = require('../utils/dbhandlers.js')
+
 
 let jwt = require('jsonwebtoken');
 let seckey = 'seckey';
@@ -212,13 +214,11 @@ exports.getSuperAdminHandler = async (req, res) => {
 
 }
 
-
-
-
 const getOverallProfit = async () => {
   try {
     const sales = await Sale.find();
     const overallProfit = sales.reduce((total, sale) => {
+
       const saleProfit = sale.products.reduce((productTotal, product) => {
         const effectivePrice = product.discountPrice !== null && product.discountPrice !== undefined ? product.discountPrice : product.price;
         const profit = (effectivePrice - product.purchasePrice) * product.count;
@@ -242,7 +242,7 @@ const getTotalSales = async () => {
 
     const totalSales = sales.reduce((total, sale) => {
       const saleTotal = sale.products.reduce((productTotal, product) => {
-        return productTotal + (product.totalPrice || 0);
+        return productTotal + (product.count || 0);
       }, 0);
       return total + saleTotal;
     }, 0);
@@ -273,15 +273,19 @@ exports.geRecords = async (req, res) => {
   }
 };
 exports.recordSale = async (req, res) => {
-  const { username, usermail, userAddress, products } = req.body;
+  const { usermail, userAddress, products, date } = req.body;
 
   try {
     let sale = await Sale.findOne({ usermail });
 
+    const parsedDate = date ? new Date(date) : undefined;
+    console.log('Parsed Date:', parsedDate);
     const saleProducts = await Promise.all(products.map(async (item) => {
       const product = await Productdb.findById(item.id);
+
       if (!product) {
         throw new Error(`Product with ID ${item.products} not found`);
+
       }
       return {
         product_id: product._id,
@@ -291,7 +295,8 @@ exports.recordSale = async (req, res) => {
         colorName: item.colorName,
         count: item.count,
         totalPrice: item.totalPrice,
-        purchasePrice: item.purchasePrice
+        purchasePrice: item.purchasePrice,
+        date: item.date ? item.date : Date.now()
 
       };
     }));
@@ -299,26 +304,70 @@ exports.recordSale = async (req, res) => {
     if (sale) {
       // User exists, update their products
       sale.products = sale.products.concat(saleProducts);
-      sale.date = Date.now();
+      sale.date = parsedDate ? parsedDate : Date.now()
     } else {
       // User does not exist, create a new document
       sale = new Sale({
-        username,
         usermail,
         userAddress,
-        products: saleProducts
+        products: saleProducts,
+        date: parsedDate
       });
     }
 
     await sale.save();
 
-    return res.status(201).json(sale);
+    return res.status(201).json({ messsage: "sales record has been saved", sale });
   } catch (error) {
 
     console.log(error, "error")
     return res.status(500).json({ message: error.message });
   }
 };
+
+
+
+exports.getWeeklySales = async (req, res) => {
+  try {
+    const Sales = await dburl.getWeeklySales();
+    const profit = await dburl.getWeeklyProfit();
+    // let Revenue= await dburl.getWeeklyProfitAndRevenue()
+
+    return res.json({
+      WeeklyRecord: [
+        {
+          name: "Sales",
+          data: Sales,
+        },
+        {
+          name: "Revenue",
+          data: profit
+
+        }
+
+      ]
+
+
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+  }
+};
+
+
+exports.getMonthlySales = async (req, res) => {
+  try {
+    const monthlyRecord = await dburl.getMonthlySales()
+
+    return res.json( monthlyRecord);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send('Server Error');
+  }
+}
+
+
 
 
 
