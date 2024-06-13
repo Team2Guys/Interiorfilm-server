@@ -125,7 +125,7 @@ exports.adminLoginhandler = async (req, res) => {
     }
 
 
-    const token = jwt.sign({ email: email }, seckey);
+    const token = jwt.sign({ email: email }, process.env.secKey);
     const { password, ...userWithoutPassword } = admin;
 
     res.status(200).json({ token, messsage: "User has been successfully loggedIn", user: userWithoutPassword._doc });
@@ -182,7 +182,7 @@ exports.superAdminLoginhandler = async (req, res) => {
     }
 
 
-    const token = jwt.sign({ email: email }, seckey);
+    const token = jwt.sign({ email: email }, process.env.secKey);
 
     // Send the token in the response
     res.status(200).json({ token, messsage: "User has been successfully loggedIn", user: admincredential });
