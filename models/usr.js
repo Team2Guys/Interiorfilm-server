@@ -15,14 +15,14 @@ password:{
     type: String,
     require: true
 },
-ProfilePhoto: [{
+ProfilePhoto: {
   public_id: {
     type: String,
   },
   imageUrl: {
     type: String,
   }
-}],
+},
 
 })
 
