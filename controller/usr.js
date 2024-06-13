@@ -155,7 +155,7 @@ const getuserHandler = async (req, res) => {
   const editUserHandler = async (req, res) => {
     try {
       const adminId = req.params.id;
-      const { fullName, email,  } = req.body;
+      const { fullName, email,ProfilePhoto  } = req.body;
       if (!fullName || !email) return res.status(401).json({ message: "Mondatory fields are required" });
   
   
@@ -167,7 +167,7 @@ const getuserHandler = async (req, res) => {
       // Update the admin properties
       existingAdmin.fullName = fullName;
       existingAdmin.email = email;
-      existingAdmin.ProfilePhoto = profilePhoto;
+      existingAdmin.ProfilePhoto = ProfilePhoto;
   
       // Save the updated admin to the database
       const updatedAdmin = await existingAdmin.save();
