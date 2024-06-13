@@ -62,12 +62,12 @@ const login = async (req, res) => {
                 });
             } else {
                 return res.status(401).json({
-                    message: 'Invalid username or password',
+                    error: 'Invalid username or password',
                 });
             }
         } else {
             return res.status(404).json({
-                message: 'User not found',
+                error: 'User not found',
             });
         }
     } catch (error) {
@@ -152,11 +152,41 @@ const getuserHandler = async (req, res) => {
   };
   
 
+  const editUserHandler = async (req, res) => {
+    try {
+      const adminId = req.params.id;
+      const { fullName, email,  } = req.body;
+      if (!fullName || !email) res.status(401).json({ message: "Mondatory fields are required" });
+  
+  
+      let existingAdmin = await users.findById(adminId);
+      if (!existingAdmin) {
+        return res.status(404).json({ message: 'Admin not found' });
+      }
+  
+      // Update the admin properties
+      existingAdmin.fullName = fullName;
+      existingAdmin.lastName = lastName;
+      existingAdmin.email = email;
+      existingAdmin.ProfilePhoto = profilePhoto;
+  
+      // Save the updated admin to the database
+      const updatedAdmin = await existingAdmin.save();
+  
+      res.status(200).json(updatedAdmin);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+
+
 module.exports = {
     signup,
     login,
     passwordReset2,
     userHandler,
-    getuserHandler
+    getuserHandler,
+    editUserHandler
+    
 
 };
