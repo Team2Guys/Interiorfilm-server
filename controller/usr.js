@@ -47,13 +47,13 @@ const login = async (req, res) => {
 
                 const { password, ...userWithoutPassword } = user._doc
 
-    res.cookie('token', token, {
-        httpOnly: true,
-        secure: true,
-        maxAge: 24 * 60 * 60 * 1000,
-        sameSite: 'strict',
-      });
-      console.log(res.cookie, "cookie")
+                res.cookie('token', token, {
+                    httpOnly: true,
+                    secure: true,
+                    maxAge: 24 * 60 * 60 * 1000,
+                    sameSite: 'strict',
+                });
+                console.log(res.cookie, "cookie")
                 return res.status(200).json({
                     message: 'Login successful',
                     user: userWithoutPassword,
@@ -82,8 +82,8 @@ const userHandler = async (req, res) => {
     try {
         const email = req.body.email
 
-        if(!email)  return res.status(400).json({
-            error:"email is required"
+        if (!email) return res.status(400).json({
+            error: "email is required"
         });
         const user = await users.findOne({ email: email });
         if (!user) {
@@ -120,7 +120,7 @@ const passwordReset2 = async (req, res) => {
         await user.save();
         return res.status(200).json({
             message: 'Password is reseted!',
-                    });
+        });
     } catch (error) {
 
         return res.status(500).json({
@@ -130,10 +130,33 @@ const passwordReset2 = async (req, res) => {
     }
 };
 
+const getuserHandler = async (req, res) => {
+    try {
+      const email = req.email;
+      if (!email) {
+        return res.status(400).json({ message: 'Email not found' });
+      }
+  
+      const admin = await users.findOne({ email });
+      if (!admin) {
+        return res.status(401).json({ message: 'user not found' });
+      }
+  
+      const { password, ...userWithoutPassword } = admin._doc;
+  
+      console.log(userWithoutPassword, 'userWithoutPassword')
+      return res.status(200).json({ messsage: "User found", user: userWithoutPassword });
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  };
+  
+
 module.exports = {
     signup,
     login,
     passwordReset2,
-    userHandler
+    userHandler,
+    getuserHandler
 
 };
