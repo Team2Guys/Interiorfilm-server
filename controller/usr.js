@@ -33,9 +33,9 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        const { email, password ,fullName} = req.body;
-        if (!email || !password || !fullName) {
-            throw new Error('Email, Full name, password are required');
+        const { email, password } = req.body;
+        if (!email || !password) {
+            throw new Error('Email and password are required');
         }
         console.log(email, "email")
 
