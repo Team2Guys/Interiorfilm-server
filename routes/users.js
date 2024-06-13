@@ -10,7 +10,7 @@ usrRouter.post('/login', usr.login)
 usrRouter.post('/emailVarify', usr.userHandler)
 usrRouter.post('/passwordReset', usr.passwordReset2)
 usrRouter.post('/getuserHandler',authenticate, usr.getuserHandler)
-adminRouter.put('/userEdit/:id',authenticate,usr.editUserHandler )
+usrRouter.put('/userEdit/:id',authenticate,usr.editUserHandler )
 
 
 module.exports  = usrRouter
