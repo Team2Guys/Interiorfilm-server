@@ -9,7 +9,7 @@ usrRouter.post('/signup',usr.signup )
 usrRouter.post('/login', usr.login)
 usrRouter.post('/emailVarify', usr.userHandler)
 usrRouter.post('/passwordReset', usr.passwordReset2)
-usrRouter.post('/getuserHandler',authenticate, usr.getuserHandler)
+usrRouter.get('/getuserHandler',authenticate, usr.getuserHandler)
 usrRouter.put('/userEdit/:id',authenticate,usr.editUserHandler )
 
 
