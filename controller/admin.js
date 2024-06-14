@@ -365,7 +365,7 @@ exports.getWeeklySales = async (req, res) => {
   try {
     const Sales = await dburl.getWeeklySales();
     const profit = await dburl.getWeeklyProfit();
-    // let Revenue= await dburl.getWeeklyProfitAndRevenue()
+const revenue = await dburl.getWeeklyRevenue()
 
     return res.json({
       WeeklyRecord: [
@@ -374,12 +374,16 @@ exports.getWeeklySales = async (req, res) => {
           data: Sales,
         },
         {
-          name: "Revenue",
+          name: "Profit",
           data: profit
-
+        },
+        {
+          name: "Revenue",
+          data: revenue
         }
 
       ]
+
 
 
     });

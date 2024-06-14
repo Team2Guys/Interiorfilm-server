@@ -244,18 +244,94 @@ const getMonthlySales = async () => {
     };
   });
 
+
+
+
   console.log("Aggregated Sales, Profit, and Revenue by Month for Current Year:", JSON.stringify(completeMonthlyData, null, 2));
 
   return completeMonthlyData;
 };
 
 
+const getWeeklyRevenue = async () => {
+  const today = new Date();
+  const startOfWeek = new Date();
+  startOfWeek.setDate(today.getDate() - today.getDay() - 7); // Start of current week (last Sunday)
 
+  const endOfWeek = new Date(startOfWeek);
+  endOfWeek.setDate(startOfWeek.getDate() + 7); // End of current week (next Sunday)
 
+  try {
+    const sales = await Sale.aggregate([
+      {
+        $unwind: "$products"
+      },
+      {
+        $match: {
+          "products.date": {
+            $gte: startOfWeek,
+            $lt: endOfWeek,
+          },
+        },
+      },
+      {
+        $project: {
+          dayOfWeek: { $dayOfWeek: "$products.date" },
+          revenue: {
+            $cond: {
+              if: { $and: [{ $ne: ["$products.discountPrice", null] }, { $ne: ["$products.discountPrice", undefined] }] },
+              then: {
+                $multiply: [
+                  "$products.discountPrice",
+                  "$products.count"
+                ]
+              },
+              else: {
+                $multiply: [
+                  "$products.price",
+                  "$products.count"
+                ]
+              }
+            }
+          }
+        }
+      },
+      {
+        $group: {
+          _id: "$dayOfWeek",
+          totalRevenue: { $sum: "$revenue" }
+        }
+      },
+      {
+        $sort: { "_id": 1 }
+      },
+      {
+        $project: {
+          dayOfWeek: "$_id",
+          totalRevenue: 1,
+          _id: 0
+        }
+      }
+    ]);
 
+    // Create an array with days of the week
+    const dayMapping = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
+    // Map the results to include all days of the week with default revenue of 0
+    const result = dayMapping.map((day, index) => {
+      const financialSummary = sales.find(sale => sale.dayOfWeek === index + 1);
+      return {
+        day,
+        totalRevenue: financialSummary ? financialSummary.totalRevenue : 0
+      };
+    });
 
-
+    return result;
+  } catch (error) {
+    console.error("Error calculating weekly revenue:", error.message);
+    throw new Error(error.message);
+  }
+};
 
 
 
@@ -264,4 +340,5 @@ module.exports = {
   getWeeklySales,
   getWeeklyProfit,
   getMonthlySales,
+  getWeeklyRevenue
 };
