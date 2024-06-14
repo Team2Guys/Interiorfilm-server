@@ -76,6 +76,23 @@ const adminSchema = new Schema({
 });
 
 
+adminSchema.pre('save', async function(next) {
+    const user = this;
+    if (!user.isModified('password')) {
+      return next();
+    }
+    try {
+        const saltRounds = 10;
+
+      const hashedPassword = await bcrypt.hash(user.password, saltRounds);
+      user.password = hashedPassword;
+      next();
+    } catch (error) {
+      next(error);
+    }
+  });
+
+
 const Admin = mongoose.model("Admins", adminSchema);
 
 module.exports = { Admin };

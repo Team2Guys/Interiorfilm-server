@@ -131,7 +131,7 @@ exports.adminLoginhandler = async (req, res) => {
     if (!admin) {
       return res.status(401).json({ message: 'user not found' });
     }
-    const isPasswordValid = admin.password === req.body.password
+    const isPasswordValid = await comparePassword(req.body.password, admin.password);
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
