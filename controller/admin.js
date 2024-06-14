@@ -14,7 +14,15 @@ require('dotenv').config();
 
 exports.adminhanlder = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, canAddProduct, canDeleteProduct, canAddCategory, canDeleteCategory } = req.body;
+    const {fullname, email, password, canAddProduct,canEditProduct, canDeleteProduct, canAddCategory, canDeleteCategory,canEditCategory ,  canCheckProfit ,
+      canCheckRevenue ,
+      canCheckVisitors,
+      canViewUsers,
+      canViewSales,
+    
+    
+    } = req.body;
+    
 
     if (!firstName || !lastName || !email || !password) return res.status(401).json({ message: "Mondatory fields are required" });
 
@@ -24,14 +32,14 @@ exports.adminhanlder = async (req, res) => {
     }
 
     const newAdmin = new Admin({
-      firstName,
-      lastName,
+      fullname,
       email,
       password,
-      canAddProduct,
-      canDeleteProduct,
-      canAddCategory,
-      canDeleteCategory
+      canAddProduct,canEditProduct, canDeleteProduct, canAddCategory, canDeleteCategory,canEditCategory ,  canCheckProfit ,
+      canCheckRevenue ,
+      canCheckVisitors,
+      canViewUsers,
+      canViewSales,
     });
     const savedAdmin = await newAdmin.save();
 
