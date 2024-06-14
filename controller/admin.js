@@ -4,10 +4,11 @@ const CategoryDb = require('../models/categoriesModel.js');
 const { users } = require('../models/usr');
 const Sale = require('../models/salesModel.js');
 const dburl = require('../utils/dbhandlers.js')
+let { comparePassword } = require('../utils/comparepswd')
 
 
-let jwt = require('jsonwebtoken');
-let seckey = 'seckey';
+
+let jwt = require('jsonwebtoken');;
 require('dotenv').config();
 
 
