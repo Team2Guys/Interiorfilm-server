@@ -62,7 +62,18 @@ const adminSchema = new Schema({
         type: Boolean,
         default: false
     },
-
+    canVeiwAdmins: {
+        type: Boolean,
+        default: false
+    },
+    canVeiwTotalproducts: {
+        type: Boolean,
+        default: false
+    },
+    canVeiwTotalCategories: {
+        type: Boolean,
+        default: false
+    },
     profilePhoto: {
         public_id: {
           type: String,
