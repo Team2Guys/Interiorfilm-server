@@ -268,6 +268,25 @@ const getTotalSales = async () => {
     throw new Error(error.message)
   }
 };
+const getOverallRevenue = async () => {
+  try {
+    const sales = await Sale.find();
+    const overallRevenue = sales.reduce((total, sale) => {
+      const saleRevenue = sale.products.reduce((productTotal, product) => {
+        const effectivePrice = product.discountPrice !== null && product.discountPrice !== undefined ? product.discountPrice : product.price;
+        const revenue = effectivePrice * product.count;
+        return productTotal + revenue;
+      }, 0);
+      return total + saleRevenue;
+    }, 0);
+
+    return overallRevenue;
+  } catch (error) {
+    console.error("Error calculating overall revenue:", error.message);
+    throw new Error(error.message);
+  }
+};
+
 
 
 
@@ -279,9 +298,10 @@ exports.geRecords = async (req, res) => {
     const totalUsers = await users.countDocuments();
     const totalProfit = await getOverallProfit()
     const totalSales = await getTotalSales()
+    const totalRevenue = await getOverallRevenue()
 
 
-    return res.status(200).json({ totalAdmins, totalProducts, totalCategories, totalUsers, totalProfit, totalSales });
+    return res.status(200).json({ totalAdmins, totalProducts, totalCategories, totalUsers, totalProfit, totalSales,totalRevenue });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
