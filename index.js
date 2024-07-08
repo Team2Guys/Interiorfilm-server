@@ -5,6 +5,7 @@ const usrRouter = require("./routes/users");
 const productRouter = require('./routes/productRoutes')
 const adminRouter = require("./routes/admin");
 let cookieParser = require('cookie-parser');  
+const reviewRoutes = require('./routes/review');
 
 
 
@@ -40,6 +41,8 @@ app.use(cors(corsOptions));
 app.use("/api", productRouter);
 app.use("/api/users", usrRouter);
 app.use("/api/admins", adminRouter);
+app.use('/api/reviews', reviewRoutes);
+
 
 
 app.get("/", function (req, res) {
