@@ -22,7 +22,8 @@ const allowedOrigins = [
   'http://localhost:3000', 
   'http://localhost:3001', 
   'https://interiorfilm.vercel.app' ,
-  "http://192.168.1.37:3000"
+  "http://192.168.1.37:3000",
+  "https://interiorfilms.netlify.app"
 ];
 
 // Custom CORS options
