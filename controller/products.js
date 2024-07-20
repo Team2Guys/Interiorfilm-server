@@ -22,28 +22,28 @@ exports.addProduct = async (req, res) => {
         const code = req.body.code;
 
         console.log(code, "code", "name", name)
-        if(!name || !code) return res.status(400).json({
+        if (!name || !code) return res.status(400).json({
             error: "Product name or code not found",
         })
-        let totalQuntity = req.body.totalStockQuantity 
-        let existingProduct = await Productdb.findOne({$or: [{ name: name }, { code: code }]});
+        let totalQuntity = req.body.totalStockQuantity
+        let existingProduct = await Productdb.findOne({ $or: [{ name: name }, { code: code }] });
 
-console.log("existingProduct", existingProduct)
+        console.log("existingProduct", existingProduct)
 
-        if(!totalQuntity){
+        if (!totalQuntity) {
             const variantStockQuantities = req.body.variantStockQuantities || [];
             let totalStockQuantity = 0;
-        
+
             variantStockQuantities.forEach(variant => {
                 if (variant.quantity && !isNaN(variant.quantity)) {
                     totalStockQuantity += parseInt(variant.quantity, 10);
                 }
             });
             req.body.totalStockQuantity = totalStockQuantity;
-        
-        
+
+
         }
-    
+
 
         if (existingProduct) return res.status(400).json({
             error: "Product Already Exist",
@@ -322,24 +322,29 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.sendEmailHandler = async (req, res) => {
-    const { name, email, message } = req.body;
+    const { user_name, user_email, commit } = req.body;
+    try {
+        const mailOptions = {
+            from: user_email,
+            to: 'faadsardar123@gmail.com',
+            subject: 'New message from contact form',
+            text: `Name: ${user_name}\nEmail: ${user_email}\nMessage: ${commit}`,
+        };
 
-    const mailOptions = {
-        from: email,
-        to: 'faadsardar123@gmail.com',
-        subject: 'New message from contact form',
-        text: `Name: ${name}\nEmail: ${email}\nMessage: ${message}`,
-    };
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.error('Error sending email:', error);
+                throw new Error('Error sending email')
+            } else {
+                console.log('Email sent:', info.response);
+                res.status(200).send('Email sent successfully');
+            }
+        });
+    } catch (err) {
+        res.status(500).send('Error sending email');
+    }
 
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.error('Error sending email:', error);
-            res.status(500).send('Error sending email');
-        } else {
-            console.log('Email sent:', info.response);
-            res.send('Email sent successfully');
-        }
-    });
+
 };
 
 

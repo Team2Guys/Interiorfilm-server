@@ -16,19 +16,19 @@ require('dotenv').config();
 
 exports.adminhanlder = async (req, res) => {
   try {
-    const {fullname, email, password,
-       canAddProduct,canEditProduct,
-        canDeleteProduct,
-         canAddCategory,
-          canDeleteCategory,
-          canEditCategory ,
-            canCheckProfit ,
-      canCheckRevenue ,
+    const { fullname, email, password,
+      canAddProduct, canEditProduct,
+      canDeleteProduct,
+      canAddCategory,
+      canDeleteCategory,
+      canEditCategory,
+      canCheckProfit,
+      canCheckRevenue,
       canCheckVisitors,
       canViewUsers,
       canViewSales,
     } = req.body;
-    
+
 
     if (!fullname || !email || !password) return res.status(401).json({ message: "Mondatory fields are required" });
 
@@ -41,8 +41,8 @@ exports.adminhanlder = async (req, res) => {
       fullname,
       email,
       password,
-      canAddProduct,canEditProduct, canDeleteProduct, canAddCategory, canDeleteCategory,canEditCategory ,  canCheckProfit ,
-      canCheckRevenue ,
+      canAddProduct, canEditProduct, canDeleteProduct, canAddCategory, canDeleteCategory, canEditCategory, canCheckProfit,
+      canCheckRevenue,
       canCheckVisitors,
       canViewUsers,
       canViewSales,
@@ -301,7 +301,7 @@ exports.geRecords = async (req, res) => {
     const totalRevenue = await getOverallRevenue()
 
 
-    return res.status(200).json({ totalAdmins, totalProducts, totalCategories, totalUsers, totalProfit, totalSales,totalRevenue });
+    return res.status(200).json({ totalAdmins, totalProducts, totalCategories, totalUsers, totalProfit, totalSales, totalRevenue });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -365,10 +365,9 @@ exports.getWeeklySales = async (req, res) => {
   try {
     const Sales = await dburl.getWeeklySales();
     const profit = await dburl.getWeeklyProfit();
-const revenue = await dburl.getWeeklyRevenue()
+    const revenue = await dburl.getWeeklyRevenue()
 
-    return res.json({
-      WeeklyRecord: [
+    return res.json({WeeklyRecord: [
         {
           name: "Sales",
           data: Sales,
@@ -398,7 +397,7 @@ exports.getMonthlySales = async (req, res) => {
   try {
     const monthlyRecord = await dburl.getMonthlySales()
 
-    return res.json( monthlyRecord);
+    return res.json(monthlyRecord);
   } catch (error) {
     console.error(error);
     return res.status(500).send('Server Error');

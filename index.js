@@ -26,10 +26,8 @@ const allowedOrigins = [
   "https://interiorfilms.netlify.app"
 ];
 
-// Custom CORS options
 const corsOptions = {
   origin: function (origin, callback) {
-    console.log('Request origin:', origin);
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {

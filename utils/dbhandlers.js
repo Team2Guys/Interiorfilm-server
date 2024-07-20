@@ -29,7 +29,6 @@ const getWeeklySales = async () => {
   const today = new Date();
   const startOfWeek = new Date();
   startOfWeek.setDate(today.getDate() - today.getDay() - 7); 
-
   const endOfWeek = new Date(startOfWeek);
   endOfWeek.setDate(startOfWeek.getDate() + 7);
 
@@ -66,7 +65,7 @@ const getWeeklySales = async () => {
     }
   ]);
 
-  console.log("Aggregated Sales:", JSON.stringify(sales, null, 2));
+
 
   // Create an array with days of the week
   const dayMapping = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -256,11 +255,9 @@ const getMonthlySales = async () => {
 const getWeeklyRevenue = async () => {
   const today = new Date();
   const startOfWeek = new Date();
-  startOfWeek.setDate(today.getDate() - today.getDay() - 7); // Start of current week (last Sunday)
-
+  startOfWeek.setDate(today.getDate() - today.getDay() - 7); 
   const endOfWeek = new Date(startOfWeek);
-  endOfWeek.setDate(startOfWeek.getDate() + 7); // End of current week (next Sunday)
-
+  endOfWeek.setDate(startOfWeek.getDate() + 7);
   try {
     const sales = await Sale.aggregate([
       {
@@ -314,7 +311,7 @@ const getWeeklyRevenue = async () => {
       }
     ]);
 
-    // Create an array with days of the week
+ 
     const dayMapping = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
     // Map the results to include all days of the week with default revenue of 0
