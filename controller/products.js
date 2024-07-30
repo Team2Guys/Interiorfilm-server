@@ -312,23 +312,142 @@ exports.deleteProductImage = async (req, res) => {
 
 
 const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: 'mail.blindsandcurtains.ae',
     port: 587,
     secure: false,
     auth: {
-        user: 'faadsardar123@gmail.com',
-        pass: 'ddah dgfc kwwa mrtt',
+        user: `${process.env.ADMIN_MAIL}`,
+        pass: `${process.env.ADMIN_PASSWORD}`,
     },
 });
 
 exports.sendEmailHandler = async (req, res) => {
-    const { user_name, user_email, commit } = req.body;
+    const { user_name, user_email, comment,user_phone } = req.body;
     try {
         const mailOptions = {
-            from: user_email,
+            from: "info@artiart.ae",
             to: 'faadsardar123@gmail.com',
             subject: 'New message from contact form',
-            text: `Name: ${user_name}\nEmail: ${user_email}\nMessage: ${commit}`,
+            html:`<!DOCTYPE html>
+  <html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            margin: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+    
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .logo-wrapper {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .email-content-wrapper {
+            background-color: white;
+            padding: 40px 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+            text-transform: capitalize;
+        }
+
+        .email-content-wrapper h1 {
+            text-align: center;
+            color: #d5232e;
+            font-size: 28px;
+            margin-bottom: 30px;
+            padding-top: 30px;
+        }
+
+        .email-content-wrapper p {
+            font-size: 16px;
+            margin-bottom: 30px;
+            padding: 0px 20px;
+            line-height: 1.5;
+        }
+
+        .customer-info-wrapper {
+            background-color: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+        .customer-info{
+            max-width: fit-content;
+            margin: 0 auto;
+        }
+        .customer-info p {
+            margin: 20px 0;
+            font-size: 16px;
+        }
+
+        .customer-info p span {
+            font-weight: bold;
+            display: inline-block;
+            width: 70px;
+        }
+
+        @media (max-width: 600px) {
+            .container{
+                padding: 20px 10px;
+            }
+            .email-content-wrapper {
+                padding: 30px 10px;
+            }
+
+            .email-content-wrapper h1 {
+                font-size: 20px;
+            }
+
+            .email-content-wrapper p,
+            .customer-info p {
+                font-size: 14px;
+            }
+
+            .customer-info-wrapper {
+                padding: 15px 10px;
+            }
+            .customer-info-wrapper p{
+                padding: 0px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <section class="container">
+        <div class="logo-wrapper">
+            <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1721481998/logo_qjixz5.png" alt="logo" width="150" height="120">
+        </div>
+        <div class="email-content-wrapper">
+
+            <p>${comment}</p>
+            <h1>Customer Information</h1>
+            <div class="customer-info-wrapper">
+                <div class="customer-info">
+                <p><span>Name:</span>${user_name}</p>
+                <p><span>Email:</span> ${user_email}</p>
+                <p><span>Phone:</span> ${user_phone}</p>
+
+            </div>
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
+`
         };
 
         transporter.sendMail(mailOptions, function (error, info) {
