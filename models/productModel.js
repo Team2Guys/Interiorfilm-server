@@ -106,10 +106,12 @@ variantStockQuantities: [{
     type: Number,
   }
 }],
-sizes : [{
-  type: String,
-}, 
-]
+
+sizes: [{
+  sizesDetails: {
+    type: String,
+  }
+}],
 });
 
 
