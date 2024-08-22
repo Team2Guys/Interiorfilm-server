@@ -7,8 +7,6 @@ const adminRouter = require("./routes/admin");
 let cookieParser = require('cookie-parser');  
 const reviewRoutes = require('./routes/review');
 
-
-
 const connect = require("./helper/connect");
 require("dotenv").config();
 const cors = require("cors");
