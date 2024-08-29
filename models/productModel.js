@@ -42,6 +42,10 @@ const productSchema = new Schema({
     required: true
   },
   imageUrl: [{
+    imageIndex: {
+      type: Number,
+      required: false
+    },
     public_id: {
       type: String,
       required: true
@@ -81,37 +85,37 @@ const productSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  starRating : {
-  type: String,
-
-},
-reviews : {
-  type: String,
-  
-},
-code : {
-  type: String,
-  require: true,
-  unique: true
-  
-},
-totalStockQuantity: {
-  type: Number,
-},
-variantStockQuantities: [{
-  variant: {
+  starRating: {
     type: String,
+
   },
-  quantity: {
-    type: Number,
-  }
-}],
-
-sizes: [{
-  sizesDetails: {
+  reviews: {
     type: String,
-  }
-}],
+
+  },
+  code: {
+    type: String,
+    require: true,
+    unique: true
+
+  },
+  totalStockQuantity: {
+    type: Number,
+  },
+  variantStockQuantities: [{
+    variant: {
+      type: String,
+    },
+    quantity: {
+      type: Number,
+    }
+  }],
+
+  sizes: [{
+    sizesDetails: {
+      type: String,
+    }
+  }],
 });
 
 
