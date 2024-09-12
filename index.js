@@ -4,6 +4,7 @@ const app = express();
 const usrRouter = require("./routes/users");
 const productRouter = require('./routes/productRoutes')
 const adminRouter = require("./routes/admin");
+const salesRouter = require("./routes/sales");
 let cookieParser = require('cookie-parser');  
 const reviewRoutes = require('./routes/review');
 
@@ -41,6 +42,7 @@ app.use("/api", productRouter);
 app.use("/api/users", usrRouter);
 app.use("/api/admins", adminRouter);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/sales', salesRouter);
 
 
 

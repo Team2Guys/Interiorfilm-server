@@ -10,7 +10,7 @@ const saleSchema = new Schema({
         type: String
     },
     products: [{
-        product_id: {
+        id: {
             type: Schema.Types.ObjectId,
             ref: 'Product',
             required: true
@@ -25,12 +25,74 @@ const saleSchema = new Schema({
         date: {
             type: Date,
             default: Date.now
-        }
+        },
+        shippment_Fee:String,
+        order_id:{
+            type: String,
+            default: false
+        },
+        checkout:{
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        paymentStatus: {
+            type: Boolean,
+            required: true,
+            default: false
+        },
+        is_refund: {
+            type: Boolean,
+            default: false
+    
+        },
+        currency: {
+            type: String,
+    
+        },
+        transactionId: {
+            type: String,
+    
+        },
+        integration_id: {
+            type: String,
+    
+        },
+        amount_cents: {
+            type: String,
+    
+        },
+        success: {
+            type: Boolean,
+            default: false
+    
+        },
+        pending: {
+            type: Boolean,
+            default: false
+    
+        },
+        is_3d_secure: {
+            type: Boolean,
+    
+        },
+        createdAt: {
+            type: Date,
+            default: Date.now,
+        },
+    
+        
+
+
     }],
     date: {
         type: Date,
         default: Date.now
-    }
+    },
+
+
+
+
 });
 
 const Sale = mongoose.model('Sale', saleSchema);
