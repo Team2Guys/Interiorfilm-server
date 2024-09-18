@@ -14,15 +14,11 @@ const paymobAPI = axios.create({
     },
 });
 
-
-
-
-
   const gentereateToken = async () => {
     try {
         const apiKey = process.env.PAYMOB_API_KEY;
         if (!apiKey) {
-            console.log("API Key is not set in environment variables.");
+            console.log("API Key is not set in environment variables.", apiKey);
             throw new Error("API Key is not set in environment variables.")
         }
         const response = await paymobAPI.post('/auth/tokens', {api_key: apiKey});
@@ -77,7 +73,7 @@ exports.recordSale = async (req, res) => {
      let sale=  await Sale.findOne({ usermail : extractedData.email });
   
       const parsedDate = date ? new Date(date) : undefined;
-      console.log('extractedData', extractedData);
+      console.log('orderId',orderId, typeof(orderId));
       
       const paymentKeyResponse = await paymobAPI.post('/acceptance/payment_keys', {
         auth_token: token,
@@ -89,6 +85,7 @@ exports.recordSale = async (req, res) => {
         integration_id: process.env.PAYMOB_INTEGRATION_ID,
 
     });
+    console.log(paymentKeyResponse, "paymentKeyResponse")
 
       const saleProducts = await Promise.all(products.map(async (item) => {
   
@@ -109,15 +106,14 @@ exports.recordSale = async (req, res) => {
           date: item.date ? item.date : Date.now(),
           shippment_Fee:shipmentFee,
           order_id: orderId,
-          paymentStatus:false
+          paymentStatus:false,
+          checkout: true
   
         };
 
       }));
   
       if (sale) {
-        console.log(saleProducts, "sales")
-
         sale.products = sale.products.concat(saleProducts);
         sale.date = parsedDate ? parsedDate : Date.now()
       } else {
@@ -133,6 +129,38 @@ exports.recordSale = async (req, res) => {
   
       await sale.save();
   
+
+
+        // const response = await axios.post('https://pakistan.paymob.com/api/acceptance/payment_keys', {
+        //   auth_token: token,
+        //   amount_cents: totalAmount * 100, // amount in cents
+        //   expiration: 3600, // token expiration time in seconds
+        //   order_id: orderId,
+        //   billing_data: {
+        //     first_name: 'Muhammad',
+        //     last_name: 'Faad',
+        //     country: 'Pakistan',
+        //     phone_number: '923184036661',
+        //     email: 'faadsardar123@gmail.com',
+        //     address: 'Islamabasdfasfsadfasdfasfasdffadsfad',
+        //     state: 'punjab',
+        //     city: 'Islamabad',
+        //     street: 'Main Boulevard',
+        //     floor: '2',
+        //     building: "-",
+        //     apartment:"-",
+        //     shipping_method: 'Courier',
+        //   },
+        //   currency: "PKR",
+        //       integration_id: 174077,
+      
+        // });
+
+
+        // return response.data;
+
+      
+
       return res.status(201).json({paymentKey: paymentKeyResponse.data.token });
     } catch (error) {
   
@@ -140,12 +168,10 @@ exports.recordSale = async (req, res) => {
       return res.status(500).json({ message: error});
     }
   };
-
-
-
-  exports.postPayhnalder = async (req, res) => {
+  exports.postPayement = async (req, res) => {
     try {
-        const { id,
+        const { 
+            id,
             success,
             amount_cents,
             integration_id,
@@ -156,76 +182,33 @@ exports.recordSale = async (req, res) => {
             is_3d_secure,
             created_at
         } = req.body
-        if (!id || !success || !amount_cents || !integration_id || !currency || !order_id || !pending || !is_3d_secure || !created_at) {
-            return res.status(400).json({ message: 'Missing required fields in request body' });
-        }
+        // if (!id || !success || !amount_cents || !integration_id || !currency || !order_id || !pending || !is_3d_secure || !created_at) {
+        //     return res.status(400).json({ message: 'Missing required fields in request body' });
+        // }
 
-        let orderRecord = await PaymentDB.findOne({ order_id });
-
-        if (!orderRecord) {
-            return res.status(404).json({ message: 'Payment record not found' });
-        }
-        orderRecord.paymentStatus = success
-        orderRecord.success = success
-        orderRecord.amount_cents = amount_cents
-        orderRecord.integration_id = integration_id
-        orderRecord.currency = currency
-        orderRecord.is_refund = is_refund
-        orderRecord.is_3d_secure = is_3d_secure
-        orderRecord.transactionDate = created_at
-        orderRecord.transactionId = id
-        orderRecord.pending = pending
-        orderRecord.checkout = false
-        let TotalProductsPrice = 0
-
-        function formatProductDetails(products) {
-            return products.map(product => {
-                TotalProductsPrice += Number(product.totalPrice)
-                return `Product: ${product.name}\nColor: ${product.color}\nCount: ${product.Count}\nTotal Price:${product.totalPrice}`;
-            }).join('\n');
-        }
-        formatProductDetails(orderRecord.orderedProductDetails)
-        const updateProductQuantity = async (orderedProductDetails) => {
-
-            for (const orderedProduct of orderedProductDetails) {
-                const { id, Count, color } = orderedProduct;
-
-                // Find the product by ID
-                let product = await Productdb.findById(id);
-                if (!product) {
-                    return res.status(404).json({ message: "Product not found" });
-                }
-
-                // Update the total stock quantity
-                product.totalStockQuantity -= Count;
-
-                // Update the variant stock quantity
-                let variant = product.variantStockQuantities.find(v => v.variant === color);
-                if (variant) {
-                    variant.quantity -= Count;
-                }
-
-                // Save the updated product
-                await product.save();
-        
+      const updateResult = await Sale.updateOne(
+        { "products.order_id": order_id },
+        { 
+            $set: {
+                "products.$.paymentStatus": success,
+                "products.$.success": success,
+                "products.$.amount_cents": amount_cents,
+                "products.$.integration_id": integration_id,
+                "products.$.currency": currency,
+                "products.$.is_refund": is_refund,
+                "products.$.is_3d_secure": is_3d_secure,
+                "products.$.transactionDate": created_at,
+                "products.$.transactionId": id,
+                "products.$.pending": pending,
+                "products.$.checkout": false
             }
-
         }
-
-
-
-  let successFlag= success.toLowerCase()==="true"
-
-        if (successFlag) {
-            sendEmailHandler(orderRecord.first_name + " " + orderRecord.last_name, orderRecord.email, orderRecord.phone_number, orderRecord.address, `${orderRecord.state}, ${orderRecord.country}`, TotalProductsPrice, orderRecord.orderedProductDetails, orderRecord.shippment_Fee, ' Order has been confirmed')
-            sendEmailHandler(orderRecord.first_name + " " + orderRecord.last_name, orderRecord.email, orderRecord.phone_number, orderRecord.address,  `${orderRecord.state}, ${orderRecord.country}`, TotalProductsPrice, orderRecord.orderedProductDetails, orderRecord.shippment_Fee, ' Order has been confirmed', orderRecord.email)
-            await orderRecord.save();
-            await updateProductQuantity(orderRecord.orderedProductDetails)
-            return res.status(200).json({ message: 'Payment record updated successfully' })
-        } else {
-            throw new Error("Payement not successfull")
-        }
-
+    );
+    
+    if (updateResult.matchedCount === 0) {
+        return res.status(404).json({ message: 'Payment record not found' });
+    }
+return res.send(updateResult)
     } catch (err) {
         res.status(500).json({ message: err.message || 'Internal server error', error: err });
     }

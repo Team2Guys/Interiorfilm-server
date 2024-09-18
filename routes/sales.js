@@ -8,6 +8,7 @@ const salesRouter = express.Router()
 salesRouter.post('/recordSale',salesController.recordSale)
 salesRouter.get('/authenticate',salesController.authenticate)
 salesRouter.post('/createOrder',salesController.createOrder)
+salesRouter.post('/postPayement',salesController.postPayement)
 
 
 module.exports  = salesRouter
