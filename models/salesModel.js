@@ -9,6 +9,15 @@ const saleSchema = new Schema({
     userAddress: {
         type: String
     },
+    country: {
+        type: String
+    },
+    city: {
+        type: String
+    },
+    phone_number: {
+        type: String
+    },
     products: [{
         id: {
             type: Schema.Types.ObjectId,
@@ -26,6 +35,11 @@ const saleSchema = new Schema({
             type: Date,
             default: Date.now
         },
+        imageUrl: {
+            type: String,
+            required: true
+        
+          },
         shippment_Fee:String,
         order_id:{
             type: String,
@@ -79,7 +93,10 @@ const saleSchema = new Schema({
         createdAt: {
             type: Date,
             default: Date.now,
-        },
+            },
+            length: {
+            type: Number,
+            },
     
         
 

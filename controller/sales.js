@@ -1,6 +1,7 @@
 const Sale = require('../models/salesModel.js');
 const mongoose = require('mongoose');
 
+
 const Productdb = require('../models/productModel.js');
 const { sendEmailHandler } = require('../utils/emailHandler')
 
@@ -107,8 +108,10 @@ exports.recordSale = async (req, res) => {
           shippment_Fee:shipmentFee,
           order_id: orderId,
           paymentStatus:false,
-          checkout: true
-  
+          checkout: true,
+          length:item.length,
+          imageUrl: item.imageUrl
+          
         };
 
       }));
@@ -122,6 +125,9 @@ exports.recordSale = async (req, res) => {
         sale = new Sale({
           usermail:extractedData.email,
           userAddress:extractedData.address,
+          country:extractedData.country,
+          city:extractedData.city,
+          phone_number:extractedData.phone_number,
           products: saleProducts,
           date: parsedDate
         });
@@ -180,11 +186,15 @@ exports.recordSale = async (req, res) => {
             order_id,
             pending,
             is_3d_secure,
-            created_at
+            created_at,
+            length
         } = req.body
         // if (!id || !success || !amount_cents || !integration_id || !currency || !order_id || !pending || !is_3d_secure || !created_at) {
         //     return res.status(400).json({ message: 'Missing required fields in request body' });
         // }
+  let successFlag= success.toLowerCase()==="true"
+
+if(!successFlag) return res.status(404).json({ message: 'Payment not successfull' });
 
       const updateResult = await Sale.updateOne(
         { "products.order_id": order_id },
@@ -205,10 +215,51 @@ exports.recordSale = async (req, res) => {
         }
     );
     
+
     if (updateResult.matchedCount === 0) {
-        return res.status(404).json({ message: 'Payment record not found' });
+      return res.status(404).json({ message: 'Payment record not found' });
+  }
+
+    const saleRecord = await Sale.findOne(
+      { "products": { $elemMatch: { order_id: order_id } } }
+    );
+  
+  if(!saleRecord)throw new Error('Product not found');
+
+  let filteredProduct=  saleRecord.products.filter((item)=>item.order_id ==order_id)
+  if(!(filteredProduct.length > 0))throw new Error('Product not found');
+
+
+  for (const orderRecord of filteredProduct) {
+    const { id, Count, color } = orderRecord;
+
+    let product = await Productdb.findById(id);
+    if (!product) {
+        return res.status(404).json({ message: "Product not found" });
     }
-return res.send(updateResult)
+console.log(typeof(length), "totalStockQuantity")
+    product.totalStockQuantity -= orderRecord.length;
+    
+    console.log(product.totalStockQuantity, "totalStockQuantity")
+
+    // let variant = product.variantStockQuantities.find(v => v.variant === color);
+    // if (variant) {
+    //     variant.quantity -= length;
+    // }
+
+    
+    // sendEmailHandler(saleRecord.first_name + " " + saleRecord.last_name, saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, orderRecord.totalPrice, saleRecord.products, orderRecord.shippment_Fee, ' Order has been confirmed')
+    sendEmailHandler(saleRecord.first_name + " " + saleRecord.last_name, saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress,  `${saleRecord.city}, ${saleRecord.country}`, orderRecord.totalPrice, saleRecord.products, orderRecord.shippment_Fee, ' Order has been confirmed', saleRecord.usermail)
+    
+    await product.save();
+
+}
+
+
+
+
+
+return res.send(filteredProduct)
     } catch (err) {
         res.status(500).json({ message: err.message || 'Internal server error', error: err });
     }

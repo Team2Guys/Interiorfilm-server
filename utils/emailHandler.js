@@ -17,7 +17,10 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
 
     const mailOptions = {
         from: 'info@artiart.ae',
-        to: CustomerEmail ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2}`,
+        to: CustomerEmail 
+        
+        // ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2}`
+        ,
         subject: subject ? subject : 'Order Confirmation',
         html: `
             <!DOCTYPE html>
@@ -147,10 +150,10 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
                                 ${productDetails.map((product, index) => `
                                     <tr>
                                         <td>${index + 1}</td>
-                                        <td><div style="display:flex; gap:10px;align-items:center; justify-content:center; width: 200px"><p> <img src="${product.posterImageUrl.imageUrl}" alt="${product.name}" style="height:40px; width:40px;"></p>  <p>${product.name}</p></div></td>
-                                        <td><span style="background-color: #${product.color}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span></td>
-                                        <td>${product.Count}</td>
-                                        <td>${product.Product_price}</td>
+                                        <td><div style="display:flex; gap:10px;align-items:center; justify-content:center; width: 200px"><p> <img src="${product.imageUrl}" alt="${product.name}" style="height:40px; width:40px;"></p>  <p>${product.name}</p></div></td>
+                                        // <td><span style="background-color: #${product.color}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span></td>
+                                        <td>${product.length}</td>
+                                        <td>${product.price}</td>
                                         <td>${product.totalPrice}</td>
                                     </tr>
                                 `).join('')}
