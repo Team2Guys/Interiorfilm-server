@@ -16,8 +16,8 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
     console.log("name", name, phone);
 
     const mailOptions = {
-        from: 'info@artiart.ae',
-        to: CustomerEmail 
+        from: 'faadsardar123@gmail.com"',
+        to: "faadsardar123@gmail.com" 
         
         // ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2}`
         ,

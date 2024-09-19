@@ -6,6 +6,15 @@ const saleSchema = new Schema({
         type: String,
         required: String
     },
+    
+    first_name: {
+        type: String
+    },
+    
+    last_name: {
+        type: String
+    },
+    
     userAddress: {
         type: String
     },

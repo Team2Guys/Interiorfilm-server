@@ -129,7 +129,9 @@ exports.recordSale = async (req, res) => {
           city:extractedData.city,
           phone_number:extractedData.phone_number,
           products: saleProducts,
-          date: parsedDate
+          date: parsedDate,
+          first_name: extractedData.first_name,
+          last_name: extractedData.last_name
         });
       }
   
@@ -174,6 +176,10 @@ exports.recordSale = async (req, res) => {
       return res.status(500).json({ message: error});
     }
   };
+
+
+
+
   exports.postPayement = async (req, res) => {
     try {
         const { 
@@ -228,7 +234,8 @@ if(!successFlag) return res.status(404).json({ message: 'Payment not successfull
 
   let filteredProduct=  saleRecord.products.filter((item)=>item.order_id ==order_id)
   if(!(filteredProduct.length > 0))throw new Error('Product not found');
-
+let TotalPrice= ''
+let shippment_Fee =""
 
   for (const orderRecord of filteredProduct) {
     const { id, Count, color } = orderRecord;
@@ -237,25 +244,31 @@ if(!successFlag) return res.status(404).json({ message: 'Payment not successfull
     if (!product) {
         return res.status(404).json({ message: "Product not found" });
     }
-console.log(typeof(length), "totalStockQuantity")
+console.log(typeof(orderRecord.length), "totalStockQuantity")
     product.totalStockQuantity -= orderRecord.length;
     
-    console.log(product.totalStockQuantity, "totalStockQuantity")
-
+    TotalPrice = orderRecord.totalPrice
+    shippment_Fee= orderRecord.shippment_Fee
     // let variant = product.variantStockQuantities.find(v => v.variant === color);
     // if (variant) {
     //     variant.quantity -= length;
     // }
 
     
-    // sendEmailHandler(saleRecord.first_name + " " + saleRecord.last_name, saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, orderRecord.totalPrice, saleRecord.products, orderRecord.shippment_Fee, ' Order has been confirmed')
-    sendEmailHandler(saleRecord.first_name + " " + saleRecord.last_name, saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress,  `${saleRecord.city}, ${saleRecord.country}`, orderRecord.totalPrice, saleRecord.products, orderRecord.shippment_Fee, ' Order has been confirmed', saleRecord.usermail)
-    
+  
     await product.save();
 
 }
 
 
+console.log(TotalPrice, "shippment_Fee", shippment_Fee)
+
+  // sendEmailHandler(saleRecord.first_name + " " + saleRecord.last_name, saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, orderRecord.totalPrice, saleRecord.products, orderRecord.shippment_Fee, ' Order has been confirmed')
+  sendEmailHandler((saleRecord.first_name + " " + saleRecord.last_name), saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress,  `${saleRecord.city}, ${saleRecord.country}`, TotalPrice, saleRecord.products, shippment_Fee, ' Order has been confirmed', saleRecord.usermail)
+    
+const {products, ...without} =saleRecord
+
+console.log(without._doc, "saleRecord")
 
 
 
