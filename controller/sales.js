@@ -2,6 +2,7 @@ const Sale = require('../models/salesModel.js');
 const mongoose = require('mongoose');
 
 
+
 const Productdb = require('../models/productModel.js');
 const { sendEmailHandler } = require('../utils/emailHandler')
 
