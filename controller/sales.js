@@ -227,17 +227,18 @@ if(!successFlag) return res.status(404).json({ message: 'Payment not successfull
       return res.status(404).json({ message: 'Payment record not found' });
   }
 
-    const saleRecord = await Sale.findOne(
-      { "products": { $elemMatch: { order_id: order_id } } }
-    );
+    const saleRecord = await Sale.findOne({ "products": { $elemMatch: { order_id: order_id } } });
   
   if(!saleRecord)throw new Error('Product not found');
 
   let filteredProduct=  saleRecord.products.filter((item)=>item.order_id ==order_id)
+
   if(!(filteredProduct.length > 0))throw new Error('Product not found');
-let TotalPrice= ''
+
+let TotalPrice= 0
 let shippment_Fee =""
 
+console.log(filteredProduct.length, "product length")
   for (const orderRecord of filteredProduct) {
     const { id, Count, color } = orderRecord;
 
@@ -245,10 +246,10 @@ let shippment_Fee =""
     if (!product) {
         return res.status(404).json({ message: "Product not found" });
     }
-console.log(typeof(orderRecord.length), "totalStockQuantity")
+console.log(orderRecord, "totalStockQuantity")
     product.totalStockQuantity -= orderRecord.length;
     
-    TotalPrice = orderRecord.totalPrice
+    TotalPrice += Number(orderRecord.totalPrice);
     shippment_Fee= orderRecord.shippment_Fee
     // let variant = product.variantStockQuantities.find(v => v.variant === color);
     // if (variant) {
@@ -264,13 +265,11 @@ console.log(typeof(orderRecord.length), "totalStockQuantity")
 
 console.log(TotalPrice, "shippment_Fee", shippment_Fee)
 
-  // sendEmailHandler(saleRecord.first_name + " " + saleRecord.last_name, saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, orderRecord.totalPrice, saleRecord.products, orderRecord.shippment_Fee, ' Order has been confirmed')
-  sendEmailHandler((saleRecord.first_name + " " + saleRecord.last_name), saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress,  `${saleRecord.city}, ${saleRecord.country}`, TotalPrice, saleRecord.products, shippment_Fee, ' Order has been confirmed', saleRecord.usermail)
+  // sendEmailHandler(saleRecord.first_name + " " + saleRecord.last_name, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, orderRecord.totalPrice, saleRecord.products, orderRecord.shippment_Fee, ' Order has been confirmed')
+  sendEmailHandler((saleRecord.first_name + " " + saleRecord.last_name), saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress,  `${saleRecord.city}, ${saleRecord.country}`, TotalPrice, filteredProduct, shippment_Fee, `New Order confirmed against Order #${order_id}`,)
+  sendEmailHandler((saleRecord.first_name + " " + saleRecord.last_name), saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress,  `${saleRecord.city}, ${saleRecord.country}`, TotalPrice, filteredProduct, shippment_Fee, `Order has been confirmed against Order # ${order_id}`, saleRecord.usermail)
     
 const {products, ...without} =saleRecord
-
-console.log(without._doc, "saleRecord")
-
 
 
 return res.send(filteredProduct)

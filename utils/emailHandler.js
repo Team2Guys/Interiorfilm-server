@@ -12,17 +12,20 @@ const transporter = nodemailer.createTransport({
     },
 });
 
+//   <td><span style="background-color: #${product.color}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span></td>
+// <th >color</th>
+
+
 const sendEmailHandler = async (name, email, phone, address, State, TotalProductsPrice, productDetails, shippment_Fee, subject, CustomerEmail) => {
-    console.log("name", name, phone);
+    console.log("name", TotalProductsPrice);
 
     const mailOptions = {
-        from: 'faadsardar123@gmail.com"',
-        to: "faadsardar123@gmail.com" 
-        
-        // ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2}`
+        from: "info@artiart.ae",
+        to: CustomerEmail ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2}`
         ,
         subject: subject ? subject : 'Order Confirmation',
         html: `
+        
             <!DOCTYPE html>
             <html lang="en">
             <head>
@@ -122,17 +125,26 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
   align-items:center !important;
   justify-content:center !important;
 }
+@media only screen and (max-width: 360px){
+    .order-summary th, .order-summary td, .customer-info th, .customer-info td {
+                        padding: 4px;
+            
+                    }
+}
+
                 </style>
             </head>
             <body>
+
+        
                 <div class="container">
                     <div class="header">
-                        <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1723726410/artiart_jpg_gj7hwv.jpg" alt="Brand Logo" style="max-width: 200px; margin-bottom: 20px;">
+                        <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1727692832/interiorFilms/Logo_Images/logo_sdrxse.png" alt="Brand Logo" style="max-width: 200px; margin-bottom: 20px;">
                     </div>
                     <div class="content">
                         <h2>Order has been confirmed Successfully</h2>
                         <p>Dear ${name},</p>
-                        <p>Thank you for your order!  Your new Artiart bottle is en route to keep you hydrated and happy. 🌸</p>
+                        <p>Thank You For Shopping With Us. We Have Received Your Order And It Is Being Processed. Here Is A Summary Of Your Order:</p>
                         
                         <h2>Order Summary</h2>
                         <table class="order-summary">
@@ -140,30 +152,30 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
                                 <tr>
                                     <th>#</th>
                                     <th >Product</th>
-                                    <th>Color</th>
-                                    <th>Qty</th>
+                                    <th>Size</th>
                                     <th>Product Price</th>
                                     <th>Price</th>
                                 </tr>
                             </thead>
-                            <tbody>
+
+                            
+                 <tbody>
                                 ${productDetails.map((product, index) => `
                                     <tr>
                                         <td>${index + 1}</td>
-                                        <td><div style="display:flex; gap:10px;align-items:center; justify-content:center; width: 200px"><p> <img src="${product.imageUrl}" alt="${product.name}" style="height:40px; width:40px;"></p>  <p>${product.name}</p></div></td>
-                                        // <td><span style="background-color: #${product.color}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span></td>
+                                        <td><div style="display:flex;gap:10px; align-items:center; justify-content:center; width: 200px">
+                                        <p> <img src="${product.imageUrl}" alt="${product.name}" style="height:40px; width:40px;"></p> 
+                                         <p style="margin-left: 10px">${product.name}</p></div></td>
                                         <td>${product.length}</td>
                                         <td>${product.price}</td>
                                         <td>${product.totalPrice}</td>
                                     </tr>
                                 `).join('')}
 
-                                ${shippment_Fee ? ` <tr class="total_Amount">
+                          <tr class="total_Amount">
                                        <td colspan="5" style="text-align:left;">Shipment Fee</td>
-                                       <td>${shippment_Fee}</td>
+                                       <td>${TotalProductsPrice > 250 ? "Free" : 20}</td>
                                    </tr>
-                                   ` : null
-            }
                                 <tr class="total_Amount">
                                     <td colspan="5" style="text-align:left;">TOTAL</td>
                                     <td>${TotalProductsPrice}</td>
@@ -171,81 +183,131 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
 
                                 <tr class="total_Amount">
                                     <td colspan="5" style="text-align:left;">Grand TOTAL</td>
-                                    <td>${shippment_Fee == "Free" || !shippment_Fee ? TotalProductsPrice : Number(shippment_Fee) + TotalProductsPrice}</td>
+                                    <td>${TotalProductsPrice > 250 ? TotalProductsPrice : 20 + TotalProductsPrice}</td>
                                 </tr>
 
 
 
-                            </tbody>
+                            </tbody> 
+
+
                         </table>
             
                         <h3 style="text-align:center;">Customer Information</h3>
-                        <div style="display:flex; justify-content: center; border: 1px solid #D9D9D9; border-radius:6px">
-                            <table class="customer-info" style="display:flex;align-items:center;justify-content:center; ">
-                                <tr>
-                                    <th>Name:</th>
-                                    <td>${name}</td>
-                                </tr>
-                                <tr>
-                                    <th>Email:</th>
-                                    <td>${email}</td>
-                                </tr>
-                                <tr>
-                                    <th>Phone:</th>
-                                    <td>${phone}</td>
-                                </tr>
-                                <tr>
-                                    <th>Address:</th>
-                                    <td>${address}, ${State} </td>
-                                </tr>
-                            </table>
+                        <div style="display:flex; justify-content: center; width: 70%; margin:auto; border: 1px solid #D9D9D9; border-radius:6px">
+                        
+                                <table class="customer-info" style="display:flex;align-items:center;justify-content:center; ">
+                                    <tr>
+                                        <th>Name:</th>
+                                        <td>${name}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Email:</th>
+                                        <td>${email}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Phone:</th>
+                                        <td>${phone}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Address:</th>
+                                        <td>${address}, ${State} </td>
+                                    </tr>
+                                </table>
+
+                     
+
                         </div>
                     </div>
             
-                    <div class="social-icons" style="display: flex; align-items: center; justify-content: center;">
+                    <!-- <div class="social-icons" style="display: flex; align-items: center; justify-content: center;">
                         <a href="https://www.facebook.com/artiartuae" target="_blank">
-                        <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1723726410/artiart_jpg_gj7hwv.jpg" alt="Brand Logo" style="max-width: 200px; margin-bottom: 20px;">
+                        <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1727692832/interiorFilms/Logo_Images/logo_sdrxse.png" alt="Brand Logo" style="max-width: 200px; margin-bottom: 20px;">
 
                         </a>
-                    </div>
+                    </div> -->
 
                   
         
                     <div style="text-align: center; margin-top: 20px;">
-                        <p>We Will Notify You Once Your Order Is Shipped. If You Have Any Questions, Feel Free To Contact Us At <a href="mailto:cs@artiart.ae. style="text-decoration:none;">cs@artiart.ae.</a> </p>
+                      
+                        <p>We Will Notify You Once Your Order Is Shipped.</p>
+                    
+                        <p>If You Have Any Questions, Feel Free To Contact Us At <a href="mailto:Info@Interiorfilm.Ae" target="_blank" rel="noopener" style="text-decoration:none;">Info@Interiorfilm.Ae</a> </p>
+                        
                     </div>
-
 
 
 
                       <div>
                 
-                    <p>Cheers to happy sips,</p>
-                    <p>The Artiart Team</p>
+                    <!-- <p>Regards</p>
+                    <p>The Interior Films Team</p>
+                     -->
                     </div>
 
                     <div style="text-align: center;">
-                        <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1723726410/artiart_jpg_gj7hwv.jpg" alt="Brand Logo" style="max-width: 200px; margin-bottom: 20px;">
+                        <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1727692832/interiorFilms/Logo_Images/logo_sdrxse.png" alt="Brand Logo" style="max-width: 200px; margin-bottom: 20px;">
                     </div>
                 </div>
 
 
             </body>
             </html>
+        
+
+
         `,
     };
 
-    transporter.sendMail(mailOptions, function (error, info) {
-        if (error) {
-            console.error('Error sending email:', error);
-            res.status(500).send('Error sending email');
-        } else {
-            console.log('Email sent:', info.response);
-            res.send('Email sent successfully');
-        }
-    });
+
+    try {
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.error('Error sending email:', error);
+                res.status(500).send('Error sending email');
+            } else {
+                console.log('Email sent:', info.response);
+                return info.response
+            }
+        });
+    } catch (error) {
+        throw new Error(error.message)
+    }
+
+
 };
 
+
+const send_promotional_mails = (user_email, content, subject) => {
+    const mailOptions = {
+        from: "info@artiart.ae",
+        to: "faadsardar123@gmail.com"
+
+        // ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2}`
+        ,
+        subject: subject ? subject : 'Order Confirmation',
+        html: content
+    }
+
+    try {
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.error('Error sending email:', error);
+                res.status(500).send('Error sending email');
+            } else {
+                console.log('Email sent:', info.response);
+                res.send('Email sent successfully');
+            }
+        });
+    } catch (error) {
+        throw new Error(error.message)
+    }
+}
+
+
+
 module.exports = {
-    sendEmailHandler
+    sendEmailHandler,
+    send_promotional_mails
 };
