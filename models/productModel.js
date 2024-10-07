@@ -116,6 +116,38 @@ const productSchema = new Schema({
       type: String,
     }
   }],
+  Meta_Title: {
+    type: String,
+  },
+  Meta_Description: {
+    type: String,
+  },
+  URL: {
+    type: String,
+  },
+  Canonical_Tag: {
+    type: String,
+  },
+  Images_Alt_Text: {
+    type: String,
+  },
+  Og_title: {
+    type: String,
+  },
+  Og_Image: {
+    type: String,
+  },
+  
+  Og_Url: {
+    type: String,
+  },
+  
+
+  
+
+
+
+
 });
 
 

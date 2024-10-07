@@ -12,11 +12,11 @@ adminRouter.put('/editAdmin/:id', authenticate, admin.editAdminHandler)
 adminRouter.get('/getAllAdmins', authenticate, admin.getAlladminsHandler)
 adminRouter.get('/getAdminHandler', authenticate, admin.getAdminHandler)
 adminRouter.get('/getSuperAdminHandler', authenticate, admin.getSuperAdminHandler)
-adminRouter.post('/recordSale', authenticate, admin.recordSale)
 adminRouter.get('/geRecords', authenticate, admin.geRecords)
+// adminRouter.post('/recordSale',authenticate,admin.recordSale)
 adminRouter.get('/getWeeklySales', authenticate, admin.getWeeklySales)
 adminRouter.get('/getMonthlySales', authenticate, admin.getMonthlySales)
-adminRouter.get('/getorders', authenticate, admin.getOrdersHistory)
+
 
 
 module.exports = adminRouter
