@@ -147,7 +147,19 @@ exports.adminLoginhandler = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+exports.getOrdersHistory = async (req, res) => {
 
+
+  try {
+    const sales = await Sale.find();
+    console.log("Sales data:", sales);
+    const data = sales.products
+    res.json(sales)
+  } catch (error) {
+
+    throw new Error(error.message)
+  }
+};
 
 exports.getAdminHandler = async (req, res) => {
   try {
@@ -267,6 +279,10 @@ const getTotalSales = async () => {
     throw new Error(error.message)
   }
 };
+
+
+
+
 const getOverallRevenue = async () => {
   try {
     const sales = await Sale.find();
@@ -294,7 +310,7 @@ exports.geRecords = async (req, res) => {
     const totalCategories = await CategoryDb.countDocuments();
     const totalUsers = await users.countDocuments();
     const totalProfit = await getOverallProfit()
-    const totalSales = await getTotalSales()
+    const getSalesRecord = await getSalesRecord()
     const totalRevenue = await getOverallRevenue()
 
 
@@ -311,7 +327,8 @@ exports.getWeeklySales = async (req, res) => {
     const profit = await dburl.getWeeklyProfit();
     const revenue = await dburl.getWeeklyRevenue()
 
-    return res.json({WeeklyRecord: [
+    return res.json({
+      WeeklyRecord: [
         {
           name: "Sales",
           data: Sales,

@@ -8,7 +8,7 @@ const salesRouter = require("./routes/sales");
 const new_letter_router = require("./routes/news_letter_routes");
 
 
-let cookieParser = require('cookie-parser');  
+let cookieParser = require('cookie-parser');
 const reviewRoutes = require('./routes/review');
 
 const connect = require("./helper/connect");
@@ -18,12 +18,12 @@ const PORT = 3200;
 app.use(cors());
 app.use(express.json());
 
-app.use(cookieParser());   
+app.use(cookieParser());
 
 const allowedOrigins = [
-  'http://localhost:3000', 
-  'http://localhost:3001', 
-  'https://interiorfilm.vercel.app' ,
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://interiorfilm.vercel.app',
   "http://192.168.1.37:3000",
   "https://interiorfilms.netlify.app",
   "https://interiorfilm.ae"
@@ -51,6 +51,7 @@ app.use('/api/promotion', new_letter_router);
 
 
 app.get("/", function (req, res) {
+  console.log("Hello world")
   res.send("Hellow World");
 });
 
