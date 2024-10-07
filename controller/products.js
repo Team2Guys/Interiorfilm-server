@@ -1,11 +1,12 @@
 require("dotenv").config();
 
 const Productdb = require('../models/productModel.js');
+const Sales = require('../models/salesModel.js');
 const CategoryDb = require('../models/categoriesModel.js');
 const cloudinary = require('cloudinary').v2;
 const nodemailer = require('nodemailer');
 const dburl = require('../utils/dbhandlers.js')
-
+const jwt = require("jsonwebtoken");
 
 
 
@@ -62,6 +63,34 @@ exports.addProduct = async (req, res) => {
             err
         })
     }
+
+}
+exports.userOrderHistory = async (req, res) => {
+    try {
+        console.log(req.headers.token);
+        const decoded = jwt.verify(req.headers.token, process.env.secKey);
+        const userEmail = decoded.email;
+
+        console.log('Authenticated user email:', userEmail);
+        const userSales = await Sales.find({ usermail: userEmail });
+
+        if (!userSales || userSales.length === 0) {
+            return res.status(404).json({
+                message: 'No order history found for this user',
+            });
+        }
+
+        return res.status(200).json({
+            products: userSales,
+        });
+    } catch (err) {
+        console.error('Error occurred during fetching order history:', err);
+        return res.status(500).json({
+            error: 'Internal server error',
+            err,
+        });
+    }
+
 
 }
 
@@ -322,13 +351,13 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.sendEmailHandler = async (req, res) => {
-    const { user_name, user_email, comment,user_phone } = req.body;
+    const { user_name, user_email, comment, user_phone } = req.body;
     try {
         const mailOptions = {
             from: "info@artiart.ae",
             to: 'faadsardar123@gmail.com',
             subject: 'New message from contact form',
-            html:`<!DOCTYPE html>
+            html: `<!DOCTYPE html>
   <html lang="en">
 
 <head>

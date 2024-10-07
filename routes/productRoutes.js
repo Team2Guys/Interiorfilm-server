@@ -2,7 +2,7 @@ const { Router } = require('express');
 const controller = require('../controller/products');
 const upload = require('../middleware/ImageUpload')
 const router = Router();
-
+const { authenticate } = require('../middleware/authhandler')
 
 const ApiEndPoints = {
     addProduct: "/addProduct",
@@ -11,8 +11,10 @@ const ApiEndPoints = {
     addProductImage: "/addProductImage",
     updateProduct: "/updateProduct/:id",
     getPaginateProducts: "/getPaginateProducts",
+    getOrderHistory: "/order-history",
+    trackorder: "/track-order",
 
-    
+
     // Categories
     AddCategory: "/AddCategory",
     getAllcategories: "/getAllcategories",
@@ -30,6 +32,8 @@ const ApiEndPoints = {
 router.post(ApiEndPoints.addProduct, controller.addProduct)
 router.get(ApiEndPoints.getAllproducts, controller.getAllproducts)
 router.get(ApiEndPoints.getPaginateProducts, controller.getPaginateProducts)
+router.get(ApiEndPoints.getOrderHistory, authenticate, controller.userOrderHistory)
+router.get(ApiEndPoints.trackorder, controller.trackorder)
 router.post(ApiEndPoints.updateProduct, controller.productHanler)
 
 router.delete(ApiEndPoints.deleteProduct, controller.deleteProduct)
