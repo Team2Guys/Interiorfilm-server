@@ -145,10 +145,11 @@ exports.trackorder = async (req, res) => {
     console.log('Order ID:', orderId);
 
     try {
-        console.log(req.headers.token);
-        console.log("AYLO");
+
 
         const saleRecord = await Sales.findOne({ "products": { $elemMatch: { order_id: orderId } } });
+        console.log("AYLO");
+        console.log(saleRecord);
 
         if (!saleRecord) throw new Error('Product not found');
 
@@ -160,6 +161,7 @@ exports.trackorder = async (req, res) => {
             });
         }
         return res.status(200).json({
+            userDetails: saleRecord,
             products: filteredProduct,
         });
     } catch (err) {
@@ -509,7 +511,7 @@ exports.sendEmailHandler = async (req, res) => {
             <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1721481998/logo_qjixz5.png" alt="logo" width="150" height="120">
         </div>
         <div class="email-content-wrapper">
-                <a href="https://interiorfilm.vercel.app/order-history/${orderId}" class="vieworder_btn">View Order</a>
+                <a href="https://interiorfilm.vercel.app/track-order/${orderId}" class="vieworder_btn">View Order</a>
             <p>${comment}</p>
             <h1>Customer Information</h1>
             <div class="customer-info-wrapper">
