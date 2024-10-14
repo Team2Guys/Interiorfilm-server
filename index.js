@@ -17,11 +17,7 @@ app.use(express.json());
 app.use(cookieParser());   
 
 const allowedOrigins = [
-  'http://localhost:3000', 
-  'http://localhost:3001', 
-  'https://interiorfilm.vercel.app' ,
-  "http://192.168.1.37:3000",
-  "https://interiorfilms.netlify.app"
+  "https://interiorfilm.ae"
 ];
 
 const corsOptions = {
@@ -36,19 +32,19 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use("/api", productRouter);
-app.use("/api/users", usrRouter);
-app.use("/api/admins", adminRouter);
-app.use('/api/reviews', reviewRoutes);
+app.use("/backend/api", productRouter);
+app.use("/backend/api/users", usrRouter);
+app.use("/backend/api/admins", adminRouter);
+app.use('/backend/api/reviews', reviewRoutes);
 
 
 
-app.get("/", function (req, res) {
+app.get("/backend", function (req, res) {
   res.send("Hellow World");
 });
 
 connect();
-app.listen(PORT, () => {
+app.listen(process.env.PORT || PORT, () => {
   console.log(`Server is listening at https://localhost:${PORT}`);
 
 });
