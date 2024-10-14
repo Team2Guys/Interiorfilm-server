@@ -9,7 +9,6 @@ const new_letter_router = require("./routes/news_letter_routes");
 const Adds_products_router = require("./routes/adds_productRoutes");
 
 
-
 let cookieParser = require('cookie-parser');
 const reviewRoutes = require('./routes/review');
 
