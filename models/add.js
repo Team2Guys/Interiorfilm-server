@@ -32,10 +32,6 @@ const productSchema = new Schema({
     type: Number,
     required: true
   },
-  purchasePrice: {
-    type: Number,
-    required: true
-  },
   category: {
     type: Schema.Types.ObjectId,
     ref: 'Category',
@@ -55,15 +51,7 @@ const productSchema = new Schema({
       required: true
     }
   }],
-  discountPrice: {
-    type: Number,
-  },
 
-  colors: [{
-    colorName: {
-      type: String,
-    }
-  }],
   modelDetails: [{
     name: {
       type: String,
@@ -85,14 +73,6 @@ const productSchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  starRating: {
-    type: String,
-
-  },
-  reviews: {
-    type: String,
-
-  },
   code: {
     type: String,
     require: true,
@@ -102,55 +82,11 @@ const productSchema = new Schema({
   totalStockQuantity: {
     type: Number,
   },
-  variantStockQuantities: [{
-    variant: {
-      type: String,
-    },
-    quantity: {
-      type: Number,
-    }
-  }],
-
-  sizes: [{
-    sizesDetails: {
-      type: String,
-    }
-  }],
-  Meta_Title: {
-    type: String,
-  },
-  Meta_Description: {
-    type: String,
-  },
-  URL: {
-    type: String,
-  },
-  Canonical_Tag: {
-    type: String,
-  },
-  Images_Alt_Text: {
-    type: String,
-  },
-  Og_title: {
-    type: String,
-  },
-  Og_Image: {
-    type: String,
-  },
-  
-  Og_Url: {
-    type: String,
-  },
-  
-
-  
-
-
 
 
 });
 
 
-const Productdb = mongoose.model('Product', productSchema);
+const Adds_products = mongoose.model('Adds_products', productSchema);
 
-module.exports = Productdb;
+module.exports = Adds_products;

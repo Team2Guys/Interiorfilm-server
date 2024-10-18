@@ -4,7 +4,12 @@ const app = express();
 const usrRouter = require("./routes/users");
 const productRouter = require('./routes/productRoutes')
 const adminRouter = require("./routes/admin");
-let cookieParser = require('cookie-parser');  
+const salesRouter = require("./routes/sales");
+const new_letter_router = require("./routes/news_letter_routes");
+const Adds_products_router = require("./routes/adds_productRoutes");
+
+
+let cookieParser = require('cookie-parser');
 const reviewRoutes = require('./routes/review');
 
 const connect = require("./helper/connect");
@@ -14,9 +19,14 @@ const PORT = 3200;
 app.use(cors());
 app.use(express.json());
 
-app.use(cookieParser());   
+app.use(cookieParser());
 
-const allowedOrigins = [
+const allowedOrigins =[
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://interiorfilm.vercel.app',
+  "http://192.168.1.37:3000",
+  "https://interiorfilms.netlify.app",
   "https://interiorfilm.ae"
 ];
 
@@ -36,10 +46,14 @@ app.use("/backend/api", productRouter);
 app.use("/backend/api/users", usrRouter);
 app.use("/backend/api/admins", adminRouter);
 app.use('/backend/api/reviews', reviewRoutes);
-
-
+app.use('/backend/api/sales', salesRouter);
+app.use('/backend/api/promotion', new_letter_router);
+app.use('/backend/api/addsOn_product', Adds_products_router);
 
 app.get("/backend", function (req, res) {
+
+
+
   res.send("Hellow World");
 });
 

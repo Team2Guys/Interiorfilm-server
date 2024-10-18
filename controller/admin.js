@@ -147,7 +147,19 @@ exports.adminLoginhandler = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+exports.getOrdersHistory = async (req, res) => {
 
+
+  try {
+    const sales = await Sale.find();
+    console.log("Sales data:", sales);
+    const data = sales.products
+    res.json(sales)
+  } catch (error) {
+
+    throw new Error(error.message)
+  }
+};
 
 exports.getAdminHandler = async (req, res) => {
   try {
@@ -169,9 +181,6 @@ exports.getAdminHandler = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-
-
-
 
 
 exports.superAdminLoginhandler = async (req, res) => {
@@ -270,6 +279,10 @@ const getTotalSales = async () => {
     throw new Error(error.message)
   }
 };
+
+
+
+
 const getOverallRevenue = async () => {
   try {
     const sales = await Sale.find();
@@ -290,8 +303,6 @@ const getOverallRevenue = async () => {
 };
 
 
-
-
 exports.geRecords = async (req, res) => {
   try {
     const totalAdmins = await Admin.countDocuments();
@@ -299,7 +310,7 @@ exports.geRecords = async (req, res) => {
     const totalCategories = await CategoryDb.countDocuments();
     const totalUsers = await users.countDocuments();
     const totalProfit = await getOverallProfit()
-    const totalSales = await getTotalSales()
+    const getSalesRecord = await getSalesRecord()
     const totalRevenue = await getOverallRevenue()
 
 
@@ -308,59 +319,6 @@ exports.geRecords = async (req, res) => {
     return res.status(500).json({ message: error.message });
   }
 };
-exports.recordSale = async (req, res) => {
-  const { usermail, userAddress, products, date } = req.body;
-
-  try {
-    let sale = await Sale.findOne({ usermail });
-
-    const parsedDate = date ? new Date(date) : undefined;
-    console.log('Parsed Date:', parsedDate);
-    const saleProducts = await Promise.all(products.map(async (item) => {
-      const product = await Productdb.findById(item.id);
-
-      if (!product) {
-        throw new Error(`Product with ID ${item.products} not found`);
-
-      }
-      return {
-        product_id: product._id,
-        name: item.name,
-        price: item.price,
-        discountPrice: item.discountPrice,
-        colorName: item.colorName,
-        count: item.count,
-        totalPrice: item.totalPrice,
-        purchasePrice: item.purchasePrice,
-        date: item.date ? item.date : Date.now()
-
-      };
-    }));
-
-    if (sale) {
-      // User exists, update their products
-      sale.products = sale.products.concat(saleProducts);
-      sale.date = parsedDate ? parsedDate : Date.now()
-    } else {
-      // User does not exist, create a new document
-      sale = new Sale({
-        usermail,
-        userAddress,
-        products: saleProducts,
-        date: parsedDate
-      });
-    }
-
-    await sale.save();
-
-    return res.status(201).json({ messsage: "sales record has been saved", sale });
-  } catch (error) {
-
-    console.log(error, "error")
-    return res.status(500).json({ message: error.message });
-  }
-};
-
 
 
 exports.getWeeklySales = async (req, res) => {
@@ -369,7 +327,8 @@ exports.getWeeklySales = async (req, res) => {
     const profit = await dburl.getWeeklyProfit();
     const revenue = await dburl.getWeeklyRevenue()
 
-    return res.json({WeeklyRecord: [
+    return res.json({
+      WeeklyRecord: [
         {
           name: "Sales",
           data: Sales,
@@ -405,6 +364,10 @@ exports.getMonthlySales = async (req, res) => {
     return res.status(500).send('Server Error');
   }
 }
+
+
+
+
 
 
 
