@@ -389,8 +389,7 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.sendEmailHandler = async (req, res) => {
-    const { user_name, user_email, comment, user_phone, products } = req.body;
-    const orderId = products.order_id;
+    const { user_name, user_email, comment, user_phone } = req.body;
     try {
         const mailOptions = {
             from: "info@artiart.ae",
@@ -511,7 +510,7 @@ exports.sendEmailHandler = async (req, res) => {
             <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1721481998/logo_qjixz5.png" alt="logo" width="150" height="120">
         </div>
         <div class="email-content-wrapper">
-                <a href="https://interiorfilm.vercel.app/track-order/${orderId}" class="vieworder_btn">View Order</a>
+              
             <p>${comment}</p>
             <h1>Customer Information</h1>
             <div class="customer-info-wrapper">
