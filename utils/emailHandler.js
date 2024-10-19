@@ -288,7 +288,7 @@ const send_promotional_mails = (user_email, content, subject) => {
         const mailOptions = {
             from: "info@artiart.ae",
             to: user_email,
-            subject: subject ? subject : 'Order Confirmation',
+            subject: subject ? subject : 'Promotional Mail',
             html: htmlContent
         };
 
