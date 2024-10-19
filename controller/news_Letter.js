@@ -5,8 +5,8 @@ exports.promotional_forward_handler = async (req, res) => {
     const { content } = req.body;
     console.log(content, "content");
     try {
-        // let users = await new_letter_db.find();
-        let users = [{ email: "mujtaba.shafique01@gmail.com" }]
+        let users = await new_letter_db.find();
+        // let users = [{ email: "mujtaba.shafique01@gmail.com" }]
         if (!users) return res.status(500).json({ message: "Error occured" });
         users.forEach((item) => {
             send_promotional_mails.send_promotional_mails(item.email, content);
