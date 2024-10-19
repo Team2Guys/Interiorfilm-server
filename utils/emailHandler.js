@@ -1,7 +1,6 @@
-
-
+const fs = require('fs');
 const nodemailer = require('nodemailer');
-
+const path = require('path')
 const transporter = nodemailer.createTransport({
     host: 'mail.blindsandcurtains.ae',
     port: 587,
@@ -11,7 +10,6 @@ const transporter = nodemailer.createTransport({
         pass: `${process.env.ADMIN_PASSWORD}`,
     },
 });
-
 //   <td><span style="background-color: #${product.color}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span></td>
 // <th >color</th>
 
@@ -280,29 +278,32 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
 
 
 const send_promotional_mails = (user_email, content, subject) => {
-    const mailOptions = {
-        from: "info@artiart.ae",
-        to: "faadsardar123@gmail.com"
+    const htmlFilePath = path.join(__dirname, 'template/promotional_email/index.html');
+    fs.readFile(htmlFilePath, 'utf-8', (err, htmlContent) => {
+        if (err) {
+            console.error('Error reading HTML file:', err);
+            return;
+        }
 
-        // ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2}`
-        ,
-        subject: subject ? subject : 'Order Confirmation',
-        html: content
-    }
+        const mailOptions = {
+            from: "info@artiart.ae",
+            to: user_email,
+            subject: subject ? subject : 'Promotional Mail',
+            html: htmlContent
+        };
 
-    try {
-        transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-                console.error('Error sending email:', error);
-                res.status(500).send('Error sending email');
-            } else {
-                console.log('Email sent:', info.response);
-                res.send('Email sent successfully');
-            }
-        });
-    } catch (error) {
-        throw new Error(error.message)
-    }
+        try {
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    console.error('Error sending email:', error);
+                } else {
+                    console.log('Email sent:', info.response);
+                }
+            });
+        } catch (error) {
+            console.error('Error during mail sending:', error.message);
+        }
+    });
 }
 
 
