@@ -6,7 +6,7 @@ const cloudinary = require('cloudinary').v2;
 const nodemailer = require('nodemailer');
 const dburl = require('../utils/dbhandlers.js')
 
-
+const Sales = require('../models/salesModel.js');
 
 
 
@@ -108,6 +108,73 @@ exports.deleteProduct = async (req, res) => {
     }
 
 }
+
+exports.userOrderHistory = async (req, res) => {
+    try {
+        console.log(req.headers.token);
+        console.log("AYLO");
+        // const decoded = jwt.verify(req.headers.token, process.env.secKey);
+        // const userEmail = decoded.email;
+        const userEmail = req.email
+
+
+        console.log('Authenticated user email:', userEmail);
+        const userSales = await Sales.find({ usermail: userEmail });
+
+        if (!userSales || userSales.length === 0) {
+            return res.status(404).json({
+                message: 'No order history found for this user',
+            });
+        }
+
+        return res.status(200).json({
+            products: userSales,
+        });
+    } catch (err) {
+        console.error('Error occurred during fetching order history:', err);
+        return res.status(500).json({
+            error: 'Internal server error',
+            err,
+        });
+    }
+
+
+}
+exports.trackorder = async (req, res) => {
+    const orderId = req.params.orderId;
+    console.log('Order ID:', orderId);
+
+    try {
+
+
+        const saleRecord = await Sales.findOne({ "products": { $elemMatch: { order_id: orderId } } });
+        console.log("AYLO");
+        console.log(saleRecord);
+
+        if (!saleRecord) throw new Error('Product not found');
+
+        let filteredProduct = saleRecord.products.filter((item) => item.order_id == orderId)
+
+        if (!filteredProduct || filteredProduct.length === 0) {
+            return res.status(404).json({
+                message: 'No product found for this user',
+            });
+        }
+        return res.status(200).json({
+            userDetails: saleRecord,
+            products: filteredProduct,
+        });
+    } catch (err) {
+        console.error('Error occurred during fetching getting order detail:', err);
+        return res.status(500).json({
+            error: 'Internal server error',
+            err,
+        });
+    }
+
+
+}
+
 
 
 exports.productHanler = async (req, res) => {
@@ -322,13 +389,13 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.sendEmailHandler = async (req, res) => {
-    const { user_name, user_email, comment,user_phone } = req.body;
+    const { user_name, user_email, comment, user_phone } = req.body;
     try {
         const mailOptions = {
             from: "info@artiart.ae",
-            to: 'faadsardar123@gmail.com',
+            to: user_email,
             subject: 'New message from contact form',
-            html:`<!DOCTYPE html>
+            html: `<!DOCTYPE html>
   <html lang="en">
 
 <head>
@@ -397,7 +464,16 @@ exports.sendEmailHandler = async (req, res) => {
             display: inline-block;
             width: 70px;
         }
-
+ .vieworder_btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #000;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
         @media (max-width: 600px) {
             .container{
                 padding: 20px 10px;
@@ -421,6 +497,9 @@ exports.sendEmailHandler = async (req, res) => {
             .customer-info-wrapper p{
                 padding: 0px;
             }
+             .vieworder_btn {
+                padding: 8px 16px;
+            }
         }
     </style>
 </head>
@@ -431,7 +510,7 @@ exports.sendEmailHandler = async (req, res) => {
             <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1721481998/logo_qjixz5.png" alt="logo" width="150" height="120">
         </div>
         <div class="email-content-wrapper">
-
+              
             <p>${comment}</p>
             <h1>Customer Information</h1>
             <div class="customer-info-wrapper">
@@ -486,7 +565,6 @@ exports.getPaginateProducts = async (req, res) => {
 
     }
 }
-
 
 
 

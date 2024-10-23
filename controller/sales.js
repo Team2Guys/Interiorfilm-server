@@ -89,36 +89,37 @@ exports.recordSale = async (req, res) => {
     });
     console.log(paymentKeyResponse, "paymentKeyResponse")
 
-    const saleProducts = await Promise.all(products.map(async (item) => {
+    // const saleProducts = await Promise.all(products.map(async (item) => {
 
-      let product = await Productdb.findOne({ name: item.name })
-      if (!product) {
-        throw new Error(`Product with ID ${item.products} not found`);
+    //   let product = await Productdb.findOne({ name: item.name })
+    //   if (!product) {
+    //     console.log("Issue idr hai bhai")
+    //     throw new Error(`Product with ID ${item.products} not found`);
 
-      }
-      return {
-        id: product._id,
-        name: item.name,
-        price: item.price,
-        discountPrice: item.discountPrice,
-        colorName: item.colorName,
-        count: item.count,
-        totalPrice: item.totalPrice,
-        purchasePrice: item.purchasePrice,
-        date: item.date ? item.date : Date.now(),
-        shippment_Fee: shipmentFee,
-        order_id: orderId,
-        paymentStatus: false,
-        checkout: true,
-        length: item.length,
-        imageUrl: item.imageUrl
+    //   }
+    //   return {
+    //     id: product._id,
+    //     name: item.name,
+    //     price: item.price,
+    //     discountPrice: item.discountPrice,
+    //     colorName: item.colorName,
+    //     count: item.count,
+    //     totalPrice: item.totalPrice,
+    //     purchasePrice: item.purchasePrice,
+    //     date: item.date ? item.date : Date.now(),
+    //     shippment_Fee: shipmentFee,
+    //     order_id: orderId,
+    //     paymentStatus: false,
+    //     checkout: true,
+    //     length: item.length,
+    //     imageUrl: item.imageUrl
 
-      };
+    //   };
 
-    }));
+    // }));
 
     if (sale) {
-      sale.products = sale.products.concat(saleProducts);
+      sale.products = sale.products.concat(products);
       sale.date = parsedDate ? parsedDate : Date.now()
     } else {
       console.log(saleProducts, "saleProducts", "sales")
@@ -129,7 +130,7 @@ exports.recordSale = async (req, res) => {
         country: extractedData.country,
         city: extractedData.city,
         phone_number: extractedData.phone_number,
-        products: saleProducts,
+        products,
         date: parsedDate,
         first_name: extractedData.first_name,
         last_name: extractedData.last_name
