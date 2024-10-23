@@ -9,7 +9,8 @@ let { comparePassword } = require('../utils/comparepswd')
 
 
 
-let jwt = require('jsonwebtoken');;
+let jwt = require('jsonwebtoken');const { json } = require('express');
+;
 require('dotenv').config();
 
 
@@ -154,10 +155,9 @@ exports.getOrdersHistory = async (req, res) => {
     const sales = await Sale.find();
     console.log("Sales data:", sales);
     const data = sales.products
-    res.json(sales)
+   return  res.json(sales)
   } catch (error) {
-
-    throw new Error(error.message)
+  return res.status(500),json({message: error.message})
   }
 };
 
@@ -314,7 +314,7 @@ exports.geRecords = async (req, res) => {
     const totalCategories = await CategoryDb.countDocuments();
     const totalUsers = await users.countDocuments();
     const totalProfit = await getOverallProfit()
-    const getSalesRecord = await getSalesRecord()
+    const totalSales = await getTotalSales()
     const totalRevenue = await getOverallRevenue()
 
 
