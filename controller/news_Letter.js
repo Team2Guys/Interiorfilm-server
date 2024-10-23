@@ -2,17 +2,17 @@ const new_letter_db = require("../models/news_letterModel");
 const send_promotional_mails = require("../utils/emailHandler");
 
 exports.promotional_forward_handler = async (req, res) => {
-    const { content } = req.body;
-    console.log(content, "content");
+    const { emails } = req.body;
+    console.log(emails, "email")
+if(!emails) throw new Error("Emails not found")
     try {
-        let users = await new_letter_db.find();
-        // let users = [{ email: "mujtaba.shafique01@gmail.com" }]
-        if (!users) return res.status(500).json({ message: "Error occured" });
-        users.forEach((item) => {
-            send_promotional_mails.send_promotional_mails(item.email, content);
+        // let users = await new_letter_db.find();
+        // if (!users) return res.status(500).json({ message: "Error occured" });
+        emails.forEach((item) => {
+            send_promotional_mails.send_promotional_mails(item);
         });
 
-        return res.status(200).json({ users });
+        return res.status(200).json({ message: "Emails has been sent" });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
