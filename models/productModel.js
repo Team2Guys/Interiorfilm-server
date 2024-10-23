@@ -14,6 +14,9 @@ const productSchema = new Schema({
     imageUrl: {
       type: String,
       required: true
+    },
+    altText: {
+      type: String,
     }
   },
   hoverImageUrl: {
@@ -21,6 +24,9 @@ const productSchema = new Schema({
       type: String,
     },
     imageUrl: {
+      type: String,
+    },
+    altText: {
       type: String,
     }
   },
@@ -53,6 +59,9 @@ const productSchema = new Schema({
     imageUrl: {
       type: String,
       required: true
+    },
+    altText: {
+      type: String,
     }
   }],
   discountPrice: {
@@ -137,13 +146,13 @@ const productSchema = new Schema({
   Og_Image: {
     type: String,
   },
-  
+
   Og_Url: {
     type: String,
   },
-  
 
-  
+
+
 
 
 
