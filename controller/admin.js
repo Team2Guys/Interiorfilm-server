@@ -9,7 +9,8 @@ let { comparePassword } = require('../utils/comparepswd')
 
 
 
-let jwt = require('jsonwebtoken');;
+let jwt = require('jsonwebtoken');const { json } = require('express');
+;
 require('dotenv').config();
 
 
@@ -80,7 +81,7 @@ exports.editAdminHandler = async (req, res) => {
   try {
     const adminId = req.params.id;
     const { firstName, lastName, email, canAddProduct, canDeleteProduct, canAddCategory, canDeleteCategory, profilePhoto } = req.body;
-    if (!firstName || !lastName || !email) res.status(401).json({ message: "Mondatory fields are required" });
+    if (!email) res.status(401).json({ message: "Mondatory fields are required" });
 
 
     let existingAdmin = await Admin.findById(adminId);
@@ -154,10 +155,9 @@ exports.getOrdersHistory = async (req, res) => {
     const sales = await Sale.find();
     console.log("Sales data:", sales);
     const data = sales.products
-    res.json(sales)
+   return  res.json(sales)
   } catch (error) {
-
-    throw new Error(error.message)
+  return res.status(500),json({message: error.message})
   }
 };
 
@@ -242,6 +242,7 @@ exports.getSuperAdminHandler = async (req, res) => {
 const getOverallProfit = async () => {
   try {
     const sales = await Sale.find();
+    if(!sales) throw new Error("No record found")
     const overallProfit = sales.reduce((total, sale) => {
 
       const saleProfit = sale.products.reduce((productTotal, product) => {
@@ -263,7 +264,8 @@ const getOverallProfit = async () => {
 const getTotalSales = async () => {
   try {
     const sales = await Sale.find();
-    console.log("Sales data:", sales);
+    if(!sales) throw new Error("No record found")
+
 
     const totalSales = sales.reduce((total, sale) => {
       const saleTotal = sale.products.reduce((productTotal, product) => {
@@ -286,6 +288,8 @@ const getTotalSales = async () => {
 const getOverallRevenue = async () => {
   try {
     const sales = await Sale.find();
+    if(!sales) throw new Error("No record found")
+
     const overallRevenue = sales.reduce((total, sale) => {
       const saleRevenue = sale.products.reduce((productTotal, product) => {
         const effectivePrice = product.discountPrice !== null && product.discountPrice !== undefined ? product.discountPrice : product.price;
@@ -310,12 +314,13 @@ exports.geRecords = async (req, res) => {
     const totalCategories = await CategoryDb.countDocuments();
     const totalUsers = await users.countDocuments();
     const totalProfit = await getOverallProfit()
-    const getSalesRecord = await getSalesRecord()
+    const totalSales = await getTotalSales()
     const totalRevenue = await getOverallRevenue()
 
 
     return res.status(200).json({ totalAdmins, totalProducts, totalCategories, totalUsers, totalProfit, totalSales, totalRevenue });
   } catch (error) {
+    console.log(error, "geRecords")
     return res.status(500).json({ message: error.message });
   }
 };
