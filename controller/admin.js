@@ -80,7 +80,7 @@ exports.editAdminHandler = async (req, res) => {
   try {
     const adminId = req.params.id;
     const { firstName, lastName, email, canAddProduct, canDeleteProduct, canAddCategory, canDeleteCategory, profilePhoto } = req.body;
-    if (!firstName || !lastName || !email) res.status(401).json({ message: "Mondatory fields are required" });
+    if (!email) res.status(401).json({ message: "Mondatory fields are required" });
 
 
     let existingAdmin = await Admin.findById(adminId);
