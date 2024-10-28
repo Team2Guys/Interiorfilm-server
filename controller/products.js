@@ -392,7 +392,7 @@ exports.sendEmailHandler = async (req, res) => {
     const { user_name, user_email, comment, user_phone } = req.body;
     try {
         const mailOptions = {
-            from: "info@artiart.ae",
+            from: process.env.MAILER_MAIL,
             to: user_email,
             subject: 'New message from contact form',
             html: `<!DOCTYPE html>

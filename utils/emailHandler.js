@@ -18,7 +18,7 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
     console.log("name", TotalProductsPrice);
 
     const mailOptions = {
-        from: "info@artiart.ae",
+        from: process.env.MAILER_MAIL,
         to: CustomerEmail ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2}`
         ,
         subject: subject ? subject : 'Order Confirmation',
@@ -286,7 +286,7 @@ const send_promotional_mails = (user_email, content, subject) => {
         }
 
         const mailOptions = {
-            from: "info@artiart.ae",
+            from: process.env.MAILER_MAIL,
             to: user_email,
             subject: subject ? subject : 'Promotional Mail',
             html: htmlContent
