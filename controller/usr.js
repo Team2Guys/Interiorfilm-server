@@ -115,7 +115,7 @@ const userHandler = async (req, res) => {
         });
 
         const mailOptions = {
-            from: 'info@artiart.ae',
+            from: process.env.MAILER_MAIL,
             to: user.email,
             subject: 'Your OTP Code',
             text: `Your OTP is: ${otp}. It is valid for 10 minutes.`,
