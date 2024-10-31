@@ -319,16 +319,10 @@ exports.proceedPayment = async (req, res) => {
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Token ${process.env.PAYMOB_SECRET_KEY}`);
     myHeaders.append("Content-Type", "application/json");
-    const updatedProducts = [
-      ...productItems.map(product => ({
-        ...product,
-        amount: product.totalPrice * 100,
-      })),
-      {
-
-        amount: 15 * 100,
-      }
-    ];
+    const updatedProducts = productItems.map(product => ({
+      ...product,
+      amount: product.totalPrice * 100,
+    }));
 
     console.log(updatedProducts, "updatedProducts")
     console.log(subtotalAmount, "subtotalAmount")
@@ -341,9 +335,7 @@ exports.proceedPayment = async (req, res) => {
         158,
         49727
       ],
-      "items": [updatedProducts, {
-        amount: 15 * 100,
-      }],
+      "items": updatedProducts,
 
       "billing_data": billing_data,
       "special_reference": order_id,
