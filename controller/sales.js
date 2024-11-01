@@ -286,11 +286,11 @@ exports.postPayement = async (req, res) => {
 
 exports.proceedPayment = async (req, res) => {
   try {
-    const { data, amount } = req.body
+    const { data, amount, shipmentFee } = req.body
     const { productItems, totalAmount, subtotalAmount, ...billing_data } = data;
     const order_id = generateUniqueString();
 
-
+    console.log('shipmentFee', shipmentFee);
     let sale = await Sale.findOne({ usermail: billing_data.email });
 
     const parsedDate = new Date()
@@ -313,33 +313,34 @@ exports.proceedPayment = async (req, res) => {
         order_id
       });
     }
-    const u = await sale.save();
-    console.log(u);
+    await sale.save();
+
 
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Token ${process.env.PAYMOB_SECRET_KEY}`);
     myHeaders.append("Content-Type", "application/json");
-    const updatedProducts = productItems.map(product => ({
-      ...product,
-      amount: product.totalPrice * 100,
-    }));
+    const staticProduct = {
+      name: 'Shipping Fee',
+      amount: shipmentFee === 'Free' ? 0 : shipmentFee * 100,
+    };
+    const products = productItems
+      .map(product => ({
+        ...product,
+        amount: product.totalPrice * 100,
+      }));
+    const updatedProducts = [...products, staticProduct];
 
-    console.log(updatedProducts, "updatedProducts")
-    console.log(subtotalAmount, "subtotalAmount")
-
-    productItems;
     var raw = JSON.stringify({
-      "amount": subtotalAmount * 100,
+      "amount": amount * 100,
       "currency": process.env.PAYMOD_CURRENCY,
       "payment_methods": [
         158,
         49727
       ],
       "items": updatedProducts,
-
       "billing_data": billing_data,
       "special_reference": order_id,
-      "redirection_url": "http://localhost:3000/thanks"
+      "redirection_url": "https://interiorfilm.ae/thanks"
     });
 
     var requestOptions = {
@@ -366,10 +367,6 @@ exports.proceedPayment = async (req, res) => {
       });
 
 
-    // fetch("https://uae.paymob.com/v1/intention/", requestOptions)
-    //   .then(response => response.text())
-    //   .then(result => console.log(result))
-    //   .catch(error => console.log('error', error));
   } catch (error) {
     console.log(error)
     res.status(500).json({ message: error.message || 'Internal server error', error });
