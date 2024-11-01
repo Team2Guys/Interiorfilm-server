@@ -359,7 +359,7 @@ exports.proceedPayment = async (req, res) => {
       })
       .then(result => {
         console.log(result);
-        // return res.status(201).json({ message: 'Order has been created successfully', data: result });
+        return res.status(201).json({ message: 'Order has been created successfully', data: result });
       })
       .catch(error => {
         console.log('error', error);
