@@ -122,8 +122,6 @@ exports.recordSale = async (req, res) => {
       sale.products = sale.products.concat(products);
       sale.date = parsedDate ? parsedDate : Date.now()
     } else {
-      console.log(saleProducts, "saleProducts", "sales")
-
       sale = new Sale({
         usermail: extractedData.email,
         userAddress: extractedData.address,
