@@ -330,16 +330,12 @@ exports.proceedPayment = async (req, res) => {
       }));
     const updatedProducts = [...products, staticProduct];
 
-    productItems;
     var raw = JSON.stringify({
       "amount": amount * 100,
       "currency": process.env.PAYMOD_CURRENCY,
       "payment_methods": [
-        // 158,
-        // 49727
-        12,
-        174077,
-        "testing card"
+        158,
+        49727
       ],
       "items": updatedProducts,
       "billing_data": billing_data,
@@ -354,28 +350,23 @@ exports.proceedPayment = async (req, res) => {
       redirect: 'follow'
     };
 
-    // fetch("https://uae.paymob.com/v1/intention/", requestOptions)
-    //   .then(response => {
-    //     if (!response.ok) {
-    //       throw new Error('Network response was not ok ' + response.statusText);
-    //     }
-    //     return response.json();
-    //   })
-    //   .then(result => {
-    //     console.log(result);
-    //     return res.status(201).json({ message: 'Order has been created successfully', data: result });
-    //   })
-    //   .catch(error => {
-    //     console.log('error', error);
-    //     return res.status(500).json({ message: 'Error creating order', error: error.message });
-    //   });
+    fetch("https://uae.paymob.com/v1/intention/", requestOptions)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok ' + response.statusText);
+        }
+        return response.json();
+      })
+      .then(result => {
+        console.log(result);
+        return res.status(201).json({ message: 'Order has been created successfully', data: result });
+      })
+      .catch(error => {
+        console.log('error', error);
+        return res.status(500).json({ message: 'Error creating order', error: error.message });
+      });
 
 
-    // fetch("https://uae.paymob.com/v1/intention/", requestOptions)
-    fetch("https://pakistan.paymob.com/v1/intention/", requestOptions)
-      .then(response => response.text())
-      .then(result => console.log(result))
-      .catch(error => console.log('error', error));
   } catch (error) {
     console.log(error)
     res.status(500).json({ message: error.message || 'Internal server error', error });
