@@ -290,7 +290,7 @@ exports.proceedPayment = async (req, res) => {
     const { productItems, totalAmount, subtotalAmount, ...billing_data } = data;
     const order_id = generateUniqueString();
 
-
+    console.log('shipmentFee', shipmentFee);
     let sale = await Sale.findOne({ usermail: billing_data.email });
 
     const parsedDate = new Date()
@@ -321,7 +321,7 @@ exports.proceedPayment = async (req, res) => {
     myHeaders.append("Content-Type", "application/json");
     const staticProduct = {
       name: 'Shipping Fee',
-      amount: shipmentFee * 100,
+      amount: shipmentFee === 'Free' ? 0 : shipmentFee * 100,
     };
     const products = productItems
       .map(product => ({
@@ -359,7 +359,7 @@ exports.proceedPayment = async (req, res) => {
       })
       .then(result => {
         console.log(result);
-        return res.status(201).json({ message: 'Order has been created successfully', data: result });
+        // return res.status(201).json({ message: 'Order has been created successfully', data: result });
       })
       .catch(error => {
         console.log('error', error);
