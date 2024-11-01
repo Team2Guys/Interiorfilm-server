@@ -286,7 +286,7 @@ exports.postPayement = async (req, res) => {
 
 exports.proceedPayment = async (req, res) => {
   try {
-    const { data, amount } = req.body
+    const { data, amount, shipmentFee } = req.body
     const { productItems, totalAmount, subtotalAmount, ...billing_data } = data;
     const order_id = generateUniqueString();
 
@@ -313,33 +313,38 @@ exports.proceedPayment = async (req, res) => {
         order_id
       });
     }
-    const u = await sale.save();
-    console.log(u);
+    await sale.save();
+
 
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Token ${process.env.PAYMOB_SECRET_KEY}`);
     myHeaders.append("Content-Type", "application/json");
-    const updatedProducts = productItems.map(product => ({
-      ...product,
-      amount: product.totalPrice * 100,
-    }));
-
-    console.log(updatedProducts, "updatedProducts")
-    console.log(subtotalAmount, "subtotalAmount")
+    const staticProduct = {
+      name: 'Shipping Fee',
+      amount: shipmentFee * 100,
+    };
+    const products = productItems
+      .map(product => ({
+        ...product,
+        amount: product.totalPrice * 100,
+      }));
+    const updatedProducts = [...products, staticProduct];
 
     productItems;
     var raw = JSON.stringify({
-      "amount": subtotalAmount * 100,
+      "amount": amount * 100,
       "currency": process.env.PAYMOD_CURRENCY,
       "payment_methods": [
-        158,
-        49727
+        // 158,
+        // 49727
+        12,
+        174077,
+        "testing card"
       ],
       "items": updatedProducts,
-
       "billing_data": billing_data,
       "special_reference": order_id,
-      "redirection_url": "http://localhost:3000/thanks"
+      "redirection_url": "https://interiorfilm.ae/thanks"
     });
 
     var requestOptions = {
@@ -349,27 +354,28 @@ exports.proceedPayment = async (req, res) => {
       redirect: 'follow'
     };
 
-    fetch("https://uae.paymob.com/v1/intention/", requestOptions)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok ' + response.statusText);
-        }
-        return response.json();
-      })
-      .then(result => {
-        console.log(result);
-        return res.status(201).json({ message: 'Order has been created successfully', data: result });
-      })
-      .catch(error => {
-        console.log('error', error);
-        return res.status(500).json({ message: 'Error creating order', error: error.message });
-      });
+    // fetch("https://uae.paymob.com/v1/intention/", requestOptions)
+    //   .then(response => {
+    //     if (!response.ok) {
+    //       throw new Error('Network response was not ok ' + response.statusText);
+    //     }
+    //     return response.json();
+    //   })
+    //   .then(result => {
+    //     console.log(result);
+    //     return res.status(201).json({ message: 'Order has been created successfully', data: result });
+    //   })
+    //   .catch(error => {
+    //     console.log('error', error);
+    //     return res.status(500).json({ message: 'Error creating order', error: error.message });
+    //   });
 
 
     // fetch("https://uae.paymob.com/v1/intention/", requestOptions)
-    //   .then(response => response.text())
-    //   .then(result => console.log(result))
-    //   .catch(error => console.log('error', error));
+    fetch("https://pakistan.paymob.com/v1/intention/", requestOptions)
+      .then(response => response.text())
+      .then(result => console.log(result))
+      .catch(error => console.log('error', error));
   } catch (error) {
     console.log(error)
     res.status(500).json({ message: error.message || 'Internal server error', error });
