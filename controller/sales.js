@@ -288,7 +288,7 @@ exports.proceedPayment = async (req, res) => {
   try {
     const { data, amount, shipmentFee } = req.body
     const { productItems, totalAmount, subtotalAmount, ...billing_data } = data;
-    const order_id = generateUniqueString();
+    let order_id = generateUniqueString();
 
     let sale = await Sale.findOne({ usermail: billing_data.email });
 
@@ -298,18 +298,21 @@ exports.proceedPayment = async (req, res) => {
       sale.products = sale.products.concat(productItems);
       sale.date = parsedDate ? parsedDate : Date.now()
     } else {
-
+      const items = productItems
+        .map(product => ({
+          ...product,
+          order_id: order_id,
+        }));
       sale = new Sale({
         usermail: billing_data.email,
         userAddress: billing_data.address,
         country: billing_data.country,
         city: billing_data.city,
         phone_number: billing_data.phone_code + billing_data.phone_number,
-        products: productItems,
+        products: items,
         date: parsedDate,
         first_name: billing_data.first_name,
         last_name: billing_data.last_name,
-        order_id
       });
     }
     await sale.save();
