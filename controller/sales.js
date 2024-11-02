@@ -127,8 +127,6 @@ exports.recordSale = async (req, res) => {
       sale.products = sale.products.concat(products);
       sale.date = parsedDate ? parsedDate : Date.now()
     } else {
-      // console.log(saleProducts, "saleProducts", "sales")
-
       sale = new Sale({
         usermail: extractedData.email,
         userAddress: extractedData.address,
@@ -317,7 +315,7 @@ exports.proceedPayment = async (req, res) => {
     }
     await sale.save();
 
-
+console.log(process.env.PAYMOB_SECRET_KEY, "secret key")
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Token ${process.env.PAYMOB_SECRET_KEY}`);
     myHeaders.append("Content-Type", "application/json");
@@ -332,18 +330,23 @@ exports.proceedPayment = async (req, res) => {
       }));
     const updatedProducts = [...products, staticProduct];
 
-    var raw = JSON.stringify({
+
+
+    let raw = JSON.stringify({
       "amount": amount * 100,
       "currency": process.env.PAYMOD_CURRENCY,
       "payment_methods": [
         158,
-        49727
+        49727,
+        52742,
+        52741
       ],
       "items": updatedProducts,
       "billing_data": billing_data,
       "special_reference": order_id,
-      "redirection_url": "https://interiorfilm.ae/thanks"
+      "redirection_url": "https://interiorfilm.vercel.app/thankyou"
     });
+console.log(myHeaders, "myHeaders")
 
     var requestOptions = {
       method: 'POST',
@@ -351,6 +354,7 @@ exports.proceedPayment = async (req, res) => {
       body: raw,
       redirect: 'follow'
     };
+
 
     fetch("https://uae.paymob.com/v1/intention/", requestOptions)
       .then(response => {
@@ -370,7 +374,7 @@ exports.proceedPayment = async (req, res) => {
 
 
   } catch (error) {
-    console.log(error)
+    console.log("error from catch",error)
     res.status(500).json({ message: error.message || 'Internal server error', error });
   }
 }
