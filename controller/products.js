@@ -392,7 +392,7 @@ exports.sendEmailHandler = async (req, res) => {
     const { user_name, user_email, comment, user_phone } = req.body;
     try {
         const mailOptions = {
-            from: "info@artiart.ae",
+            from: process.env.MAILER_MAIL,
             to: user_email,
             subject: 'New message from contact form',
             html: `<!DOCTYPE html>
@@ -507,7 +507,7 @@ exports.sendEmailHandler = async (req, res) => {
 <body>
     <section class="container">
         <div class="logo-wrapper">
-            <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1721481998/logo_qjixz5.png" alt="logo" width="150" height="120">
+            <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1727692832/interiorFilms/Logo_Images/logo_sdrxse.png" alt="logo"  height="50">
         </div>
         <div class="email-content-wrapper">
               
@@ -516,7 +516,7 @@ exports.sendEmailHandler = async (req, res) => {
             <div class="customer-info-wrapper">
                 <div class="customer-info">
                 <p><span>Name:</span>${user_name}</p>
-                <p><span>Email:</span> ${user_email}</p>
+              <p ><span>Email:</span> <span style="text-transform: lowercase;font-weight:400">${user_email}</span></p>
                 <p><span>Phone:</span> ${user_phone}</p>
 
             </div>

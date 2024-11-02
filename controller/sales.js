@@ -2,12 +2,17 @@ const Sale = require('../models/salesModel.js');
 const mongoose = require('mongoose');
 
 
-
 const Productdb = require('../models/productModel.js');
-const { sendEmailHandler } = require('../utils/emailHandler')
+const { sendEmailHandler } = require('../utils/emailHandler.js')
 
 const axios = require('axios');
 const dotenv = require('dotenv');
+const { v4: uuidv4 } = require('uuid');
+
+const uniqueId = uuidv4();
+function generateUniqueString() {
+  return `id_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
+}
 dotenv.config();
 const paymobAPI = axios.create({
   baseURL: process.env.PAYMOD_BASE_URL,
@@ -276,4 +281,97 @@ exports.postPayement = async (req, res) => {
     res.status(500).json({ message: err.message || 'Internal server error', error: err });
   }
 };
+
+exports.proceedPayment = async (req, res) => {
+  try {
+    const { data, amount, shipmentFee } = req.body
+    const { productItems, totalAmount, subtotalAmount, ...billing_data } = data;
+    const order_id = generateUniqueString();
+
+
+    let sale = await Sale.findOne({ usermail: billing_data.email });
+
+    const parsedDate = new Date()
+
+    if (sale) {
+      sale.products = sale.products.concat(productItems);
+      sale.date = parsedDate ? parsedDate : Date.now()
+    } else {
+
+      sale = new Sale({
+        usermail: billing_data.email,
+        userAddress: billing_data.address,
+        country: billing_data.country,
+        city: billing_data.city,
+        phone_number: billing_data.phone_code + billing_data.phone_number,
+        products: productItems,
+        date: parsedDate,
+        first_name: billing_data.first_name,
+        last_name: billing_data.last_name,
+        order_id
+      });
+    }
+    await sale.save();
+
+console.log(process.env.PAYMOB_SECRET_KEY, "secret key")
+    var myHeaders = new Headers();
+    myHeaders.append("Authorization", `Token ${process.env.PAYMOB_SECRET_KEY}`);
+    myHeaders.append("Content-Type", "application/json");
+    const staticProduct = {
+      name: 'Shipping Fee',
+      amount: shipmentFee * 100,
+    };
+    const products = productItems
+      .map(product => ({
+        ...product,
+        amount: product.totalPrice * 100,
+      }));
+    const updatedProducts = [...products, staticProduct];
+
+
+    let raw = JSON.stringify({
+      "amount": amount * 100,
+      "currency": process.env.PAYMOD_CURRENCY,
+      "payment_methods": [49727],
+      "items": updatedProducts,
+      "billing_data": billing_data,
+      "special_reference": order_id,
+      "redirection_url": "https://interiorfilm.vercel.app/thankyou"
+    });
+console.log(myHeaders, "myHeaders")
+
+    var requestOptions = {
+      method: 'POST',
+      headers: myHeaders,
+      body: raw,
+      redirect: 'follow'
+    };
+
+
+    // fetch("https://uae.paymob.com/v1/intention/", requestOptions)
+    //   .then(response => {
+    //     if (!response.ok) {
+    //       throw new Error('Network response was not ok ' + response.statusText);
+    //     }
+    //     return response.json();
+    //   })
+    //   .then(result => {
+    //     console.log("result", result);
+    //     return res.status(201).json({ message: 'Order has been created successfully', data: result });
+    //   })
+    //   .catch(error => {
+    //     console.log('error', error);
+    //     return res.status(500).json({ message: 'Error creating order', error: error.message });
+    //   });
+
+
+    fetch("https://uae.paymob.com/v1/intention/", requestOptions)
+      .then(response => response.json())
+      .then(result => console.log(result))
+      .catch(error => console.log('error', error));
+  } catch (error) {
+    console.log("error from catch",error)
+    res.status(500).json({ message: error.message || 'Internal server error', error });
+  }
+}
 
