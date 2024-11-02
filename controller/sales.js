@@ -286,8 +286,7 @@ exports.proceedPayment = async (req, res) => {
   try {
     const { data, amount, shipmentFee } = req.body
     const { productItems, totalAmount, subtotalAmount, ...billing_data } = data;
-    const order_id = generateUniqueString();
-
+    let order_id = generateUniqueString();
 
     let sale = await Sale.findOne({ usermail: billing_data.email });
 
@@ -297,18 +296,21 @@ exports.proceedPayment = async (req, res) => {
       sale.products = sale.products.concat(productItems);
       sale.date = parsedDate ? parsedDate : Date.now()
     } else {
-
+      const items = productItems
+        .map(product => ({
+          ...product,
+          order_id: order_id,
+        }));
       sale = new Sale({
         usermail: billing_data.email,
         userAddress: billing_data.address,
         country: billing_data.country,
         city: billing_data.city,
         phone_number: billing_data.phone_code + billing_data.phone_number,
-        products: productItems,
+        products: items,
         date: parsedDate,
         first_name: billing_data.first_name,
         last_name: billing_data.last_name,
-        order_id
       });
     }
     await sale.save();
@@ -319,7 +321,7 @@ console.log(process.env.PAYMOB_SECRET_KEY, "secret key")
     myHeaders.append("Content-Type", "application/json");
     const staticProduct = {
       name: 'Shipping Fee',
-      amount: shipmentFee * 100,
+      amount: shipmentFee === 'Free' || shipmentFee === 'undefine' ? 0 : shipmentFee * 100,
     };
     const products = productItems
       .map(product => ({
@@ -329,10 +331,16 @@ console.log(process.env.PAYMOB_SECRET_KEY, "secret key")
     const updatedProducts = [...products, staticProduct];
 
 
+
     let raw = JSON.stringify({
       "amount": amount * 100,
       "currency": process.env.PAYMOD_CURRENCY,
-      "payment_methods": [49727],
+      "payment_methods": [
+        158,
+        49727,
+        52742,
+        52741
+      ],
       "items": updatedProducts,
       "billing_data": billing_data,
       "special_reference": order_id,
@@ -348,27 +356,23 @@ console.log(myHeaders, "myHeaders")
     };
 
 
-    // fetch("https://uae.paymob.com/v1/intention/", requestOptions)
-    //   .then(response => {
-    //     if (!response.ok) {
-    //       throw new Error('Network response was not ok ' + response.statusText);
-    //     }
-    //     return response.json();
-    //   })
-    //   .then(result => {
-    //     console.log("result", result);
-    //     return res.status(201).json({ message: 'Order has been created successfully', data: result });
-    //   })
-    //   .catch(error => {
-    //     console.log('error', error);
-    //     return res.status(500).json({ message: 'Error creating order', error: error.message });
-    //   });
-
-
     fetch("https://uae.paymob.com/v1/intention/", requestOptions)
-      .then(response => response.json())
-      .then(result => console.log(result))
-      .catch(error => console.log('error', error));
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok ' + response.statusText);
+        }
+        return response.json();
+      })
+      .then(result => {
+        console.log(result);
+        return res.status(201).json({ message: 'Order has been created successfully', data: result });
+      })
+      .catch(error => {
+        console.log('error', error);
+        return res.status(500).json({ message: 'Error creating order', error: error.message });
+      });
+
+
   } catch (error) {
     console.log("error from catch",error)
     res.status(500).json({ message: error.message || 'Internal server error', error });
