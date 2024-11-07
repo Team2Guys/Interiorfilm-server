@@ -339,7 +339,8 @@ console.log(process.env.PAYMOB_SECRET_KEY, "secret key")
         158,
         49727,
         52742,
-        52741
+        52741,
+        52992
       ],
       "items": updatedProducts,
       "billing_data": billing_data,
