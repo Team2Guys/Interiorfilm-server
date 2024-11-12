@@ -10,6 +10,7 @@ const dotenv = require('dotenv');
 const { v4: uuidv4 } = require('uuid');
 
 const uniqueId = uuidv4();
+
 function generateUniqueString() {
   return `id_${Date.now()}_${Math.floor(Math.random() * 10000)}`;
 }
@@ -340,7 +341,8 @@ console.log(process.env.PAYMOB_SECRET_KEY, "secret key")
         49727,
         52742,
         52741,
-        52992
+        52992,
+        53201
       ],
       "items": updatedProducts,
       "billing_data": billing_data,
