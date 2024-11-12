@@ -320,6 +320,7 @@ console.log(process.env.PAYMOB_SECRET_KEY, "secret key")
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Token ${process.env.PAYMOB_SECRET_KEY}`);
     myHeaders.append("Content-Type", "application/json");
+ 
     const staticProduct = {
       name: 'Shipping Fee',
       amount: shipmentFee === 'Free' || shipmentFee === 'undefine' ? 0 : shipmentFee * 100,
@@ -347,7 +348,7 @@ console.log(process.env.PAYMOB_SECRET_KEY, "secret key")
       "items": updatedProducts,
       "billing_data": billing_data,
       "special_reference": order_id,
-      "redirection_url": "https://interiorfilm.vercel.app/thankyou"
+      "redirection_url": "https://interiorfilm.ae/thankyou"
     });
 console.log(myHeaders, "myHeaders")
 
