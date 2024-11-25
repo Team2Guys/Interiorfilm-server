@@ -200,6 +200,7 @@ exports.postPayement = async (req, res) => {
       pending,
       is_3d_secure,
       created_at,
+      merchant_order_id,
       length
     } = req.body
     // if (!id || !success || !amount_cents || !integration_id || !currency || !order_id || !pending || !is_3d_secure || !created_at) {
@@ -209,21 +210,20 @@ exports.postPayement = async (req, res) => {
 
     if (!successFlag) return res.status(404).json({ message: 'Payment not successfull' });
 
-    const updateResult = await Sale.updateOne(
-      { "products.order_id": order_id },
+    const updateResult = await Sale.updateMany(
+      { "products.order_id": merchant_order_id },
       {
         $set: {
-          "products.$.paymentStatus": success,
-          "products.$.success": success,
-          "products.$.amount_cents": amount_cents,
-          "products.$.integration_id": integration_id,
-          "products.$.currency": currency,
-          "products.$.is_refund": is_refund,
-          "products.$.is_3d_secure": is_3d_secure,
-          "products.$.transactionDate": created_at,
-          "products.$.transactionId": id,
-          "products.$.pending": pending,
-          "products.$.checkout": false
+          "products.$[].success": success,
+          "products.$[].amount_cents": amount_cents,
+          "products.$[].integration_id": integration_id,
+          "products.$[].currency": currency,
+          "products.$[].is_refund": is_refund,
+          "products.$[].is_3d_secure": is_3d_secure,
+          "products.$[].transactionDate": created_at,
+          "products.$[].transactionId": id,
+          "products.$[].pending": pending,
+          "products.$[].checkout": success
         }
       }
     );
@@ -233,16 +233,15 @@ exports.postPayement = async (req, res) => {
       return res.status(404).json({ message: 'Payment record not found' });
     }
 
-    const saleRecord = await Sale.findOne({ "products": { $elemMatch: { order_id: order_id } } });
+    const saleRecord = await Sale.findOne({ "products": { $elemMatch: { order_id: merchant_order_id } } });
 
     if (!saleRecord) throw new Error('Product not found');
 
-    let filteredProduct = saleRecord.products.filter((item) => item.order_id == order_id)
+    let filteredProduct = saleRecord.products.filter((item) => item.order_id == merchant_order_id);
+    if (filteredProduct.length === 0) throw new Error('Product not found');
 
-    if (!(filteredProduct.length > 0)) throw new Error('Product not found');
-
-    let TotalPrice = 0
-    let shippment_Fee = ""
+    let TotalPrice = 0;
+    let shippment_Fee = "";
 
     console.log(filteredProduct.length, "product length")
     for (const orderRecord of filteredProduct) {
