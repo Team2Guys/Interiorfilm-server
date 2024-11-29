@@ -199,6 +199,7 @@ exports.postPayement = async (req, res) => {
       pending,
       is_3d_secure,
       created_at,
+      merchant_order_id,
       length
     } = req.body
     // if (!id || !success || !amount_cents || !integration_id || !currency || !order_id || !pending || !is_3d_secure || !created_at) {
@@ -208,40 +209,38 @@ exports.postPayement = async (req, res) => {
 
     if (!successFlag) return res.status(404).json({ message: 'Payment not successfull' });
 
-    const updateResult = await Sale.updateOne(
-      { "products.order_id": order_id },
-      {
-        $set: {
-          "products.$.paymentStatus": success,
-          "products.$.success": success,
-          "products.$.amount_cents": amount_cents,
-          "products.$.integration_id": integration_id,
-          "products.$.currency": currency,
-          "products.$.is_refund": is_refund,
-          "products.$.is_3d_secure": is_3d_secure,
-          "products.$.transactionDate": created_at,
-          "products.$.transactionId": id,
-          "products.$.pending": pending,
-          "products.$.checkout": false
-        }
-      }
-    );
+    // const updateResult = await Sale.updateMany(
+    //   { "products.order_id": merchant_order_id },
+    //   {
+    //     $set: {
+    //       "products.$[].success": success,
+    //       "products.$[].amount_cents": amount_cents,
+    //       "products.$[].integration_id": integration_id,
+    //       "products.$[].currency": currency,
+    //       "products.$[].is_refund": is_refund,
+    //       "products.$[].is_3d_secure": is_3d_secure,
+    //       "products.$[].transactionDate": created_at,
+    //       "products.$[].transactionId": id,
+    //       "products.$[].pending": pending,
+    //       "products.$[].checkout": success
+    //     }
+    //   }
+    // );
 
 
-    if (updateResult.matchedCount === 0) {
-      return res.status(404).json({ message: 'Payment record not found' });
-    }
+    // if (updateResult.matchedCount === 0) {
+    //   return res.status(404).json({ message: 'Payment record not found' });
+    // }
 
     const saleRecord = await Sale.findOne({ "products": { $elemMatch: { order_id: order_id } } });
 
     if (!saleRecord) throw new Error('Product not found');
 
-    let filteredProduct = saleRecord.products.filter((item) => item.order_id == order_id)
+    let filteredProduct = saleRecord.products.filter((item) => item.order_id == order_id);
+    if (filteredProduct.length === 0) throw new Error('Product not found');
 
-    if (!(filteredProduct.length > 0)) throw new Error('Product not found');
-
-    let TotalPrice = 0
-    let shippment_Fee = ""
+    let TotalPrice = 0;
+    let shippment_Fee = "";
 
     console.log(filteredProduct.length, "product length")
     for (const orderRecord of filteredProduct) {
@@ -293,28 +292,7 @@ exports.proceedPayment = async (req, res) => {
 
     const parsedDate = new Date()
 
-    if (sale) {
-      sale.products = sale.products.concat(productItems);
-      sale.date = parsedDate ? parsedDate : Date.now()
-    } else {
-      const items = productItems
-        .map(product => ({
-          ...product,
-          order_id: order_id,
-        }));
-      sale = new Sale({
-        usermail: billing_data.email,
-        userAddress: billing_data.address,
-        country: billing_data.country,
-        city: billing_data.city,
-        phone_number: billing_data.phone_code + billing_data.phone_number,
-        products: items,
-        date: parsedDate,
-        first_name: billing_data.first_name,
-        last_name: billing_data.last_name,
-      });
-    }
-    await sale.save();
+
 
 console.log(process.env.PAYMOB_SECRET_KEY, "secret key")
     var myHeaders = new Headers();
@@ -367,8 +345,32 @@ console.log(myHeaders, "myHeaders")
         }
         return response.json();
       })
-      .then(result => {
-        console.log(result);
+      .then(async(result) => {
+        console.log(result.intention_order_id, "intention_order_id");
+        if (sale) {
+          sale.products = sale.products.concat(productItems);
+          sale.date = parsedDate ? parsedDate : Date.now()
+        } else {
+          const items = productItems
+            .map(product => ({
+              ...product,
+              order_id: result.intention_order_id,
+            }));
+          sale = new Sale({
+            usermail: billing_data.email,
+            userAddress: billing_data.address,
+            country: billing_data.country,
+            city: billing_data.city,
+            phone_number: billing_data.phone_code + billing_data.phone_number,
+            products: items,
+            date: parsedDate,
+            first_name: billing_data.first_name,
+            last_name: billing_data.last_name,
+          });
+        }
+        await sale.save();
+
+
         return res.status(201).json({ message: 'Order has been created successfully', data: result });
       })
       .catch(error => {
