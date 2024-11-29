@@ -303,11 +303,14 @@ console.log(process.env.PAYMOB_SECRET_KEY, "secret key")
       name: 'Shipping Fee',
       amount: shipmentFee === 'Free' || shipmentFee === 'undefine' ? 0 : shipmentFee * 100,
     };
+
     const products = productItems
-      .map(product => ({
-        ...product,
-        amount: product.totalPrice * 100,
-      }));
+          .map(product => ({
+            ...product,
+            amount: product.totalPrice * 100,
+            order_id: result.intention_order_id,
+    
+          }));
     const updatedProducts = [...products, staticProduct];
 
 
@@ -348,7 +351,8 @@ console.log(myHeaders, "myHeaders")
       .then(async(result) => {
         console.log(result.intention_order_id, "intention_order_id");
         if (sale) {
-          sale.products = sale.products.concat(productItems);
+      
+          sale.products = sale.products.concat(products);
           sale.date = parsedDate ? parsedDate : Date.now()
         } else {
           const items = productItems
