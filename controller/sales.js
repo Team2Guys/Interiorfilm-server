@@ -308,9 +308,8 @@ console.log(process.env.PAYMOB_SECRET_KEY, "secret key")
           .map(product => ({
             ...product,
             amount: product.totalPrice * 100,
-            order_id: result.intention_order_id,
-    
           }));
+
     const updatedProducts = [...products, staticProduct];
 
 
@@ -351,8 +350,12 @@ console.log(myHeaders, "myHeaders")
       .then(async(result) => {
         console.log(result.intention_order_id, "intention_order_id");
         if (sale) {
-      
-          sale.products = sale.products.concat(products);
+        const items = productItems
+            .map(product => ({
+              ...product,
+              order_id: result.intention_order_id,
+            }));
+          sale.products = sale.products.concat(items);
           sale.date = parsedDate ? parsedDate : Date.now()
         } else {
           const items = productItems
