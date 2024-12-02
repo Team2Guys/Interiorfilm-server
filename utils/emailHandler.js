@@ -263,7 +263,8 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
                 console.error('Error sending email:', error);
-                res.status(500).send('Error sending email');
+                throw new Error(error.message || JSON.stringify(error))
+
             } else {
                 console.log('Email sent:', info.response);
                 return info.response
