@@ -6,15 +6,15 @@ const saleSchema = new Schema({
         type: String,
         required: String
     },
-    
+
     first_name: {
         type: String
     },
-    
+
     last_name: {
         type: String
     },
-    
+
     userAddress: {
         type: String
     },
@@ -47,14 +47,14 @@ const saleSchema = new Schema({
         imageUrl: {
             type: String,
             required: true
-        
-          },
-        shippment_Fee:String,
-        order_id:{
+
+        },
+        shippment_Fee: String,
+        order_id: {
             type: String,
             default: false
         },
-        checkout:{
+        checkout: {
             type: Boolean,
             required: true,
             default: false
@@ -67,47 +67,50 @@ const saleSchema = new Schema({
         is_refund: {
             type: Boolean,
             default: false
-    
+
         },
         currency: {
             type: String,
-    
+
         },
         transactionId: {
             type: String,
-    
+
         },
         integration_id: {
             type: String,
-    
+
         },
         amount_cents: {
             type: String,
-    
+
         },
         success: {
             type: Boolean,
             default: false
-    
+
         },
         pending: {
             type: Boolean,
             default: false
-    
+
         },
         is_3d_secure: {
             type: Boolean,
-    
+
         },
         createdAt: {
             type: Date,
             default: Date.now,
-            },
-            length: {
+        },
+        transction_Date: {
+            type: Date
+        },
+        length: {
             type: Number,
-            },
-    
-        
+        },
+
+
 
 
     }],
