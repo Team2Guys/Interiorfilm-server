@@ -268,7 +268,7 @@ const getTotalSales = async () => {
 
 
     const totalSales = sales.reduce((total, sale) => {
-      const saleTotal = sale.products.reduce((productTotal, product) => {
+      const saleTotal = sale.products.filter((prod)=>prod.paymentStatus).reduce((productTotal, product) => {
         return productTotal + (product.count || 0);
       }, 0);
       return total + saleTotal;
@@ -291,11 +291,13 @@ const getOverallRevenue = async () => {
     if(!sales) throw new Error("No record found")
 
     const overallRevenue = sales.reduce((total, sale) => {
-      const saleRevenue = sale.products.reduce((productTotal, product) => {
-        const effectivePrice = product.discountPrice !== null && product.discountPrice !== undefined ? product.discountPrice : product.price;
-        const revenue = effectivePrice * product.count;
+      const saleRevenue = sale.products.filter((prod)=>prod.paymentStatus).reduce((productTotal, product) => {
+        const effectivePrice = (product.discountPrice !== null && product.discountPrice !== undefined && (!product.discountPrice==0 ))? product.discountPrice : product.price;
+        const revenue = effectivePrice * product.length;
         return productTotal + revenue;
       }, 0);
+      console.log(saleRevenue, "saleRevenue")
+
       return total + saleRevenue;
     }, 0);
 
