@@ -40,6 +40,7 @@ const corsOptions = {
   }
 };
 
+
 app.use(cors(corsOptions));
 
 app.use("/backend/api", productRouter);

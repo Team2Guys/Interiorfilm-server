@@ -40,6 +40,7 @@ const saleSchema = new Schema({
         count: Number,
         totalPrice: Number,
         purchasePrice: Number,
+        code: String,
         date: {
             type: Date,
             default: Date.now

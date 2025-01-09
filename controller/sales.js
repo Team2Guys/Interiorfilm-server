@@ -218,9 +218,7 @@ exports.postPayement = async (req, res) => {
     let TotalPrice = 0;
     let shippment_Fee = "";
 
-    console.log(filteredProduct.length, "product length")
-
-
+    console.log(filteredProduct, "product length")
 
     for (const orderRecord of filteredProduct) {
       const { id, Count, color } = orderRecord;
@@ -229,7 +227,6 @@ exports.postPayement = async (req, res) => {
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
-      console.log(orderRecord, "totalStockQuantity")
       product.totalStockQuantity -= orderRecord.length;
 
       TotalPrice += Number(orderRecord.totalPrice);
@@ -247,7 +244,7 @@ await saleRecord.save()
 
     const { products, ...without } = saleRecord
 
-
+console.log(filteredProduct, "filteredProduct")
     return res.send(filteredProduct)
   } catch (err) {
     res.status(500).json({ message: err.message || 'Internal server error', error: err });
