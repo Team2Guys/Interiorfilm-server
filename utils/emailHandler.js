@@ -39,7 +39,7 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
                         background-color: #f4f4f4;
                     }
                     .container {
-                        max-width: 600px;
+                        max-width: 700px;
                         margin: 20px auto;
                         background-color: #fff;
                         padding: 20px;
