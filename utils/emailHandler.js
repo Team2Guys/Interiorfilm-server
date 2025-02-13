@@ -14,13 +14,12 @@ const transporter = nodemailer.createTransport({
 // <th >color</th>
 
 
-const sendEmailHandler = async (name, email, phone, address, State, TotalProductsPrice, productDetails, shippment_Fee, subject, CustomerEmail) => {
+const sendEmailHandler = async (name, email, phone, address, State, TotalProductsPrice, productDetails, shippment_Fee, subject, CustomerEmail, purchaseDate, orderId) => {
     console.log("name", TotalProductsPrice);
 
     const mailOptions = {
         from: process.env.MAILER_MAIL,
         to: CustomerEmail ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2}`
-        // to: `mujtaba.shafique01@gmail.com`
         ,
         subject: subject ? subject : 'Order Confirmation',
 
@@ -205,7 +204,7 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
 
         .categories span {
             margin: 0 10px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 100;
         }
 
@@ -224,10 +223,8 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
             align-items: center;
             justify-content: center;
             margin-top: 50px;
-            gap: 20px;
+            margin-bottom:50px;
             width: 100%;
-            align-items: center;
-            padding:30px;
         }
 
         .step {
@@ -281,22 +278,22 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
                 <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1727692832/interiorFilms/Logo_Images/logo_sdrxse.png"
                     alt="Brand Logo">
             </div>
-            <h4 style="text-align:center;">ORDER#</h4>
-            <p style="text-align:center;">Dec 10, 2025</p>
+                 <h3 style="text-align:center; margin:0; padding:0">ORDER#${orderId}</h3>
+            <p style="text-align:center;margin:0;padding:0">${purchaseDate}</p>
             <h1 style="text-align:center;">Order Confirmed</h1>
-
+           
             <div class="progress-container" style="text-align:center;">
                 <img src="https://res.cloudinary.com/dgwsc8f0g/image/upload/v1739185485/status_xqtm6k.png" alt="Progress Status">
             </div>
-            <p style="text-align:center;">Dear Customer,</p>
-            <p style="text-align:center;">Thank you very much for the order you placed with <a
+             <p style="text-align:center;">Dear <b>Customer,</b></p>
+            <p style="text-align:center;">Thank you very much for the order <br> you placed with <a
                     href="https://interiorfilm.ae/">www.interiorfilm.ae</a></p>
             <a href="#" class="order-button">View Your Order</a>
             <p style="text-align:center;">Your order has now been sent to the warehouse to prepare for packing and
                 dispatch.</p>
             <p style="text-align:center;">Our team will be in touch soon to arrange the delivery with you.</p>
             <p style="text-align:center;">All The Best,</p>
-            <p style="text-align:center;"><strong>The Team at "Interiorfilm"</strong></p>
+            <p style="text-align:center;">The Team at<strong> @"Interiorfilm"</strong></p>
             <div class="purchase-details">
                 <h3>Purchase Details</h3>
                 <table class="purchase-table">
@@ -337,11 +334,11 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
                                 </table>
 
                                 <body style="font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 0;">
-    <table style="width: 100%; border-collapse: collapse; text-align: left; margin: auto;">
-        <tr>
-            <td style="width: 50%; vertical-align: top; padding: 10px;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <tr>
+<table style="width: 100%; border-collapse: collapse; text-align: left; margin: auto;">
+    <tr>
+        <td style="width: 60%; vertical-align: top; padding: 10px; border-right: 2px solid #ccc;">
+            <table style="width: 100%; border-collapse: collapse;">
+             <tr>
                         <th style="padding: 5px;">Customer Name:</th>
                         <td style="padding: 5px;">${name}</td>
                     </tr>
@@ -357,23 +354,27 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
                         <th style="padding: 5px;">Customer Address:</th>
                         <td style="padding: 5px;">${address}, ${State}</td>
                     </tr>
-                </table>
-            </td>
-            <td style="width: 50%; vertical-align: top; padding: 10px;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <tr style="border-bottom: 2px solid #ccc;">
-                        <td colspan="5" style="padding: 5px;">Subtotal</td>
-                        <td style="padding: 5px;">${TotalProductsPrice}</td>
-                    </tr>
-                    <tr style="border-bottom: 2px solid #ccc;">
-                        <td colspan="5" style="padding: 5px;">Shipment</td>
-                        <td style="padding: 5px;">${TotalProductsPrice > 250 ? "Free" : 20}</td>
-                    </tr>
-                    <tr>
-                        <td colspan="5" style="padding: 5px; font-weight: bold;">Total</td>
-                        <td style="padding: 5px; font-weight: bold;">${TotalProductsPrice > 250 ? TotalProductsPrice : 20 + TotalProductsPrice}</td>
-                    </tr>
-                </table>
+            </table>
+        </td>
+
+        <td style="width: 40%;  padding: 10px;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <tr >
+                    <td colspan="5" style="padding: 8px; ">Subtotal</td>
+                    <td style="padding: 8px;">${TotalProductsPrice}</td>
+                </tr>
+                <tr style="border-bottom: 2px solid #ccc;">
+                    <td colspan="5" style="padding: 8px; ">Shipment</td>
+                    <td style="padding: 8px;">${TotalProductsPrice > 1000 ? "Free" : 20}</td>
+                </tr>
+                <tr>
+                    <td colspan="5" style="padding: 8px; font-weight: bold;">Total</td>
+                    <td style="padding: 8px; font-weight: bold;">${TotalProductsPrice > 250 ? TotalProductsPrice : 20 + TotalProductsPrice}</td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
             </td>
         </tr>
     </table>
@@ -393,7 +394,6 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
             <span>CEMENT GREY</span>
         </div>
         <div class="social-icons">
-            <a href="#"> <img src="https://res.cloudinary.com/dgwsc8f0g/image/upload/v1739185483/linkedin-icon_z7kyeq.png" alt="linkedin"></a>
             <a href="https://www.facebook.com/Interiorfilmuae"> <img src="https://res.cloudinary.com/dgwsc8f0g/image/upload/v1739185482/facebook-icon_tdqcrw.png"></a>
             <a href="https://www.pinterest.com/interiorfilmuae/"> <img src="https://res.cloudinary.com/dgwsc8f0g/image/upload/v1739185483/pinterest-icon_dsvge7.png" alt="pinterest"></a>
         </div>
