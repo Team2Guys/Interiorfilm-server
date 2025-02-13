@@ -92,6 +92,16 @@ const productSchema = new Schema({
     type: Number,
   },
 
+  Meta_Title: {
+    type: String,
+  },
+  Meta_Description: {
+    type: String,
+  },
+  Canonical_Tag: {
+    type: String,
+  },
+
 
 });
 

@@ -100,6 +100,7 @@ exports.deleteProduct = async (req, res) => {
 exports.edit_productHanler = async (req, res) => {
     const productId = req.params.id;
     const updateData = req.body;
+console.log(updateData, "UPDATED DATA")
 
     try {
         const updatedProduct = await Adds_products.findByIdAndUpdate(productId, updateData, { new: true });
