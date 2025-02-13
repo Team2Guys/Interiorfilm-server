@@ -39,7 +39,7 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
                         background-color: #f4f4f4;
                     }
                     .container {
-                        max-width: 600px;
+                        max-width: 700px;
                         margin: 20px auto;
                         background-color: #fff;
                         padding: 20px;
@@ -172,15 +172,15 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
                                     </tr>
                                 `).join('')}
 
-                          <tr class="total_Amount">
-                                       <td colspan="5" style="text-align:left;">Shipment Fee</td>
-                                       <td>${TotalProductsPrice > 250 ? "Free" : 20}</td>
-                                   </tr>
+                      
                                 <tr class="total_Amount">
                                     <td colspan="5" style="text-align:left;">TOTAL</td>
                                     <td>${TotalProductsPrice}</td>
                                 </tr>
-
+                                <tr class="total_Amount">
+                                       <td colspan="5" style="text-align:left;">Shipment Fee</td>
+                                       <td>${TotalProductsPrice > 250 ? "Free" : 20}</td>
+                                   </tr>
                                 <tr class="total_Amount">
                                     <td colspan="5" style="text-align:left;">Grand TOTAL</td>
                                     <td>${TotalProductsPrice > 250 ? TotalProductsPrice : 20 + TotalProductsPrice}</td>
