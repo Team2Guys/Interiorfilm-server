@@ -214,6 +214,7 @@ exports.postPayement = async (req, res) => {
 
     let filteredProduct = saleRecord.products.filter((item) => item.order_id == order_id);
 
+
     if (filteredProduct.length === 0) throw new Error('Product not found');
 
     let TotalPrice = 0;
@@ -232,20 +233,25 @@ exports.postPayement = async (req, res) => {
 
       TotalPrice += Number(orderRecord.totalPrice);
       shippment_Fee = orderRecord.shippment_Fee
- 
+
       await product.save();
 
     }
 
-    saleRecord.products  = saleRecord.products.map((item)=>{return ({...item, checkout: false,is_3d_secure: is_3d_secure, transction_Date: Date.now(), paymentStatus: true, is_refund:is_refund,currency: currency,transactionId: id,pending: pending })})
-await saleRecord.save()
+    saleRecord.products = saleRecord.products.map((item) => { return ({ ...item, checkout: false, is_3d_secure: is_3d_secure, transction_Date: Date.now(), paymentStatus: true, is_refund: is_refund, currency: currency, transactionId: id, pending: pending }) })
+    await saleRecord.save()
     // sendEmailHandler(saleRecord.first_name + " " + saleRecord.last_name, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, orderRecord.totalPrice, saleRecord.products, orderRecord.shippment_Fee, ' Order has been confirmed')
-    sendEmailHandler((saleRecord.first_name + " " + saleRecord.last_name), saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, TotalPrice, filteredProduct, shippment_Fee, `New Order confirmed against Order #${order_id}`,)
-    sendEmailHandler((saleRecord.first_name + " " + saleRecord.last_name), saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, TotalPrice, filteredProduct, shippment_Fee, `Order has been confirmed against Order # ${order_id}`, saleRecord.usermail)
+    function formatDate(isoDateString) {
+      const date = new Date(isoDateString);
+      return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    }
+    const purchaseDate = formatDate(saleRecord.date);
+    sendEmailHandler((saleRecord.first_name + " " + saleRecord.last_name), saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, TotalPrice, filteredProduct, shippment_Fee, `New Order confirmed against Order #${order_id}`, null, purchaseDate, order_id)
+    sendEmailHandler((saleRecord.first_name + " " + saleRecord.last_name), saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, TotalPrice, filteredProduct, shippment_Fee, `Order has been confirmed against Order # ${order_id}`, saleRecord.usermail, purchaseDate, order_id)
 
     const { products, ...without } = saleRecord
 
-console.log(filteredProduct, "filteredProduct")
+    console.log(filteredProduct, "filteredProduct")
     return res.send(filteredProduct)
   } catch (err) {
     res.status(500).json({ message: err.message || 'Internal server error', error: err });
@@ -268,10 +274,10 @@ exports.proceedPayment = async (req, res) => {
     const staticProduct = {name: 'Shipping Fee',amount: shipmentFee === 'Free' || shipmentFee === 'undefine' ? 0 : shipmentFee * 100,};
 
     const products = productItems
-          .map(product => ({
-            ...product,
-            amount: product.totalPrice * 100,
-          }));
+      .map(product => ({
+        ...product,
+        amount: product.totalPrice * 100,
+      }));
 
     const updatedProducts = [...products, staticProduct];
 
@@ -293,7 +299,7 @@ exports.proceedPayment = async (req, res) => {
       "special_reference": order_id,
       "redirection_url": "https://interiorfilm.ae/thankyou"
     });
-console.log(myHeaders, "myHeaders")
+    console.log(myHeaders, "myHeaders")
 
     var requestOptions = {
       method: 'POST',
@@ -310,10 +316,10 @@ console.log(myHeaders, "myHeaders")
         }
         return response.json();
       })
-      .then(async(result) => {
+      .then(async (result) => {
         console.log(result.intention_order_id, "intention_order_id");
         if (sale) {
-        const items = productItems
+          const items = productItems
             .map(product => ({
               ...product,
               order_id: result.intention_order_id,
@@ -352,7 +358,7 @@ console.log(myHeaders, "myHeaders")
 
 
   } catch (error) {
-    console.log("error from catch",error)
+    console.log("error from catch", error)
     res.status(500).json({ message: error.message || 'Internal server error', error });
   }
 }
