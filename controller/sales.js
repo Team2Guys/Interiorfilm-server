@@ -127,6 +127,7 @@ exports.recordSale = async (req, res) => {
     if (sale) {
       sale.products = sale.products.concat(products);
       sale.date = parsedDate ? parsedDate : Date.now()
+      sales.shipmentFee = shipmentFee
     } else {
       sale = new Sale({
         usermail: extractedData.email,
@@ -260,18 +261,11 @@ exports.proceedPayment = async (req, res) => {
     let sale = await Sale.findOne({ usermail: billing_data.email });
 
     const parsedDate = new Date()
-
-
-
-console.log(process.env.PAYMOB_SECRET_KEY, "secret key")
     var myHeaders = new Headers();
     myHeaders.append("Authorization", `Token ${process.env.PAYMOB_SECRET_KEY}`);
     myHeaders.append("Content-Type", "application/json");
  
-    const staticProduct = {
-      name: 'Shipping Fee',
-      amount: shipmentFee === 'Free' || shipmentFee === 'undefine' ? 0 : shipmentFee * 100,
-    };
+    const staticProduct = {name: 'Shipping Fee',amount: shipmentFee === 'Free' || shipmentFee === 'undefine' ? 0 : shipmentFee * 100,};
 
     const products = productItems
           .map(product => ({
@@ -323,6 +317,7 @@ console.log(myHeaders, "myHeaders")
             .map(product => ({
               ...product,
               order_id: result.intention_order_id,
+              shippment_Fee:shipmentFee === 'Free' || shipmentFee === 'undefine' ? 0 : shipmentFee
             }));
           sale.products = sale.products.concat(items);
           sale.date = parsedDate ? parsedDate : Date.now()
@@ -331,6 +326,7 @@ console.log(myHeaders, "myHeaders")
             .map(product => ({
               ...product,
               order_id: result.intention_order_id,
+              shippment_Fee:shipmentFee === 'Free' || shipmentFee === 'undefine' ? 0 : shipmentFee
             }));
           sale = new Sale({
             usermail: billing_data.email,
