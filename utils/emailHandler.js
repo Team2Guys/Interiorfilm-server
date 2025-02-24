@@ -15,12 +15,10 @@ const transporter = nodemailer.createTransport({
 
 
 const sendEmailHandler = async (name, email, phone, address, State, TotalProductsPrice, productDetails, shippment_Fee, subject, CustomerEmail, purchaseDate, orderId) => {
-    console.log("name", TotalProductsPrice);
 
     const mailOptions = {
         from: process.env.MAILER_MAIL,
-        to: CustomerEmail ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2}`
-        ,
+        to: CustomerEmail ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2}`,
         subject: subject ? subject : 'Order Confirmation',
 
         html: `<!DOCTYPE html>
@@ -57,36 +55,8 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
         }
 
         .header img {
-            max-width: 250px;
-        }
-
-        .status {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
-        }
-
-        .status div {
-            padding: 10px 20px;
-            border-radius: 20px;
-            margin: 0 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 120px;
-            font-weight: bold;
-        }
-
-        .confirmed {
-            background-color: #FB7320;
-            color: #fff;
-        }
-
-        .shipping,
-        .received {
-            background-color: #ddd;
-            color: #333;
+            max-width: 40%;
+            height: auto;
         }
 
         .order-button {
@@ -98,19 +68,19 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
             padding: 10px;
             margin: 20px auto;
             text-decoration: none;
-            border-radius: 1px;
+            border-radius: 5px;
         }
 
         .purchase-details {
             background-color: #FFF9F5;
             padding: 15px;
             margin-top: 20px;
+            overflow-x: auto;
         }
 
         .purchase-table {
             width: 100%;
             border-collapse: collapse;
-             text-align: center;
         }
 
         .purchase-table th,
@@ -118,6 +88,11 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
             padding: 10px;
             text-align: left;
             border-bottom: 1px solid #ddd;
+        }
+
+        .purchase-table img {
+            height: 40px;
+            width: 40px;
         }
 
         .footer {
@@ -128,215 +103,108 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
             margin-top: 20px;
         }
 
-        .social-icons {
-            text-align: center;
-            margin-top: 10px;
-        }
-
-        .social-icons a {
-            margin: 0 10px;
-            text-decoration: none;
-            font-size: 18px;
-            color: #333;
-        }
-
-        .features {
-            background-color: #ff6600;
-            color: white;
-            padding: 20px;
+        .summary {
             display: flex;
-            justify-content: space-around;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 20px;
         }
 
-        .feature {
-            text-align: center;
-        }
-
-        .feature img {
-            width: 40px;
-            height: 40px;
-        }
-
-        .categories {
-            padding: 15px;
-            border-top: 2px solid #ccc;
-        }
-
-        .categories span {
-            margin: 0 10px;
-            font-weight: bold;
-        }
-
-        .social-icons {
-            padding: 15px;
-        }
-
-        .social-icons a {
-            margin: 0 10px;
-            text-decoration: none;
-            font-size: 20px;
-            color: black;
-        }
-
-        .features {
-            background-color: #ff6600;
-            color: white;
+        .summary div {
             width: 100%;
-            align-items: center;
-            padding:30px;
+            max-width: 350px;
+            padding: 10px;
+            box-sizing: border-box;
         }
 
-        .feature {
-            text-align: center;
-        }
-
-        .feature img {
-            width: 30px;
-            height: auto;
-        }
-
-        .categories {
-            margin-top: 10px;
-            padding: 15px;
-            border-top: 2px solid #ccc;
-            border-bottom: 2px solid #ccc;
-        }
-
-        .categories span {
-            margin: 0 10px;
-            font-size: 13px;
-            font-weight: 100;
-        }
-
-        .social-icons {
-            padding: 15px;
-        }
-
-        .social-icons a {
-            margin: 0 10px;
-            text-decoration: none;
-            font-size: 20px;
-            color: black;
-        }
-
-        .progress-container {
-            align-items: center;
-            justify-content: center;
-            margin-top: 50px;
-            margin-bottom:50px;
+        .summary table {
             width: 100%;
+            border-collapse: collapse;
         }
 
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
+        .summary th, .summary td {
+            padding: 8px;
+            text-align: left;
         }
 
-        .step:not(:last-child)::after {
-            content: "";
-            position: absolute;
-            width: 80px;
-            height: 2px;
-            background-color: black;
-            top: 25px;
-            left: 100%;
-            transform: translateX(-40%);
-        }
+        @media (max-width: 600px) {
+            .summary {
+                flex-direction: column;
+                align-items: center;
+            }
 
-        .icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-color: white;
-            border: 2px solid black;
-            font-size: 24px;
-        }
+            .summary div {
+                max-width: 100%;
+            }
 
-        .completed .icon {
-            background-color: #ff6600;
-            color: white;
-            border: none;
+            .purchase-table th, .purchase-table td {
+                font-size: 14px;
+            }
         }
-
-        .step p {
-            margin-top: 8px;
-            font-size: 14px;
-            font-weight: bold;
-        }
+            @media screen and (max-width: 600px) {
+   .user_details table {
+        width: 100% !important;
+   }
+   
+   .user_details tr, 
+   .user_details td {
+        display: block;
+        width: 100% !important;
+        text-align: left;
+   }
+}
     </style>
 </head>
 
 <body>
     <div class="container">
         <div class="main-container">
-            <div class="header" style="text-align:center;">
-                <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1727692832/interiorFilms/Logo_Images/logo_sdrxse.png"
-                    alt="Brand Logo">
+            <div class="header">
+                <img src="https://res.cloudinary.com/dgwsc8f0g/image/upload/v1740381671/logo_vankie.png" alt="InteriorFilm ">
             </div>
-                 <h3 style="text-align:center; margin:0; padding:0">ORDER#${orderId}</h3>
-            <p style="text-align:center;margin:0;padding:0">${purchaseDate}</p>
+            <h3 style="text-align:center;">ORDER#${orderId}</h3>
+            <p style="text-align:center;">${purchaseDate}</p>
             <h1 style="text-align:center;">Order Confirmed</h1>
-           
-            <div class="progress-container" style="text-align:center;">
-                <img src="https://res.cloudinary.com/dgwsc8f0g/image/upload/v1739185485/status_xqtm6k.png" alt="Progress Status">
-            </div>
-             <p style="text-align:center;">Dear <b>Customer,</b></p>
-            <p style="text-align:center;">Thank you very much for the order <br> you placed with <a
-                    href="https://interiorfilm.ae/">www.interiorfilm.ae</a></p>
             <a href="#" class="order-button">View Your Order</a>
-            <p style="text-align:center;">Your order has now been sent to the warehouse to prepare for packing and
-                dispatch.</p>
-            <p style="text-align:center;">Our team will be in touch soon to arrange the delivery with you.</p>
-            <p style="text-align:center;">All The Best,</p>
-            <p style="text-align:center;">The Team at<strong> @"Interiorfilm"</strong></p>
             <div class="purchase-details">
                 <h3>Purchase Details</h3>
-                <table class="purchase-table">
-                    <thead>
-                                        <tr>
-                                            <th>#</th>
-                                            <th >Product</th>
-                                            <th >Code</th>
-                                            <th style="text-align:center;" >Size</th>
-                                            <th>Product Price</th>
-                                            <th>Price</th>
-                                        </tr>
-                                    </thead>
-
-
-                         <tbody>
-                                        ${productDetails.map((product, index) => `
-                                            <tr>
-                                                <td>${index + 1}</td>
-                                                <td><div style="display:flex;gap:10px; align-items:center; justify-content:center; width: 200px">
-                                                <p> <img src="${product.imageUrl}" alt="${product.name}" style="height:40px; width:40px;"></p> 
-                                                 <p style="margin-left: 10px">${product.name}</p></div></td>
-                                                    <td>${product.code}</td>
-                                                <td style="text-align:center;">1.22 x ${product.length}m</td>
-                                                <td style="text-align:center;">${product.price}</td>
-                                                <td style="text-align:center;">${product.totalPrice}</td>
-                                            </tr>
-                                        `).join('')}
-
-
-                                   
-
-
-
-                                    </tbody> 
-
-
-                                </table>
-
-                                <body style="font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 0;">
-<table style="width: 100%; border-collapse: collapse; text-align: left; margin: auto;">
+                <div style="overflow-x:auto;">
+                    <table class="purchase-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Product</th>
+                                <th>Code</th>
+                                <th>Size</th>
+                                <th>Product Price</th>
+                                <th>Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${productDetails.map((product, index) => `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>
+                                        <div style="display:flex; align-items:center; gap:10px;">
+                                            <img src="${product.imageUrl}" alt="${product.name}">
+                                            <p style="min-width: 102px;">${product.name}</p>
+                                        </div>
+                                    </td>
+                                    <td>${product.code}</td>
+                                    <td>${product.length}m</td>
+                                    <td>${product.price}</td>
+                                    <td>${product.totalPrice}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+           <table style="width: 100%; border-collapse: collapse; text-align: left; margin: auto;" class="user_details">
     <tr>
         <td style="width: 60%; vertical-align: top; padding: 10px; border-right: 2px solid #ccc;">
+
+        
             <table style="width: 100%; border-collapse: collapse;">
              <tr>
                         <th style="padding: 5px;">Customer Name:</th>
@@ -357,50 +225,34 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
             </table>
         </td>
 
-        <td style="width: 40%;  padding: 10px;">
-            <table style="width: 100%; border-collapse: collapse;">
-                <tr >
-                    <td colspan="5" style="padding: 8px; ">Subtotal</td>
-                    <td style="padding: 8px;">${TotalProductsPrice}</td>
-                </tr>
-                <tr style="border-bottom: 2px solid #ccc;">
-                    <td colspan="5" style="padding: 8px; ">Shipment</td>
-                    <td style="padding: 8px;">${TotalProductsPrice > 1000 ? "Free" : 20}</td>
-                </tr>
-                <tr>
-                    <td colspan="5" style="padding: 8px; font-weight: bold;">Total</td>
-                    <td style="padding: 8px; font-weight: bold;">${TotalProductsPrice > 250 ? TotalProductsPrice : 20 + TotalProductsPrice}</td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-</table>
-            </td>
+   <td style="width: 40%; padding: 10px;">
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr style="display: flex; justify-content: space-between; width: 100%;">
+            <td style="padding: 8px;">Subtotal</td>
+            <td style="padding: 8px;">${TotalProductsPrice}</td>
+        </tr>
+        <tr style="display: flex; justify-content: space-between; width: 100%; border-bottom: 2px solid #ccc;">
+            <td style="padding: 8px;">Shipment</td>
+            <td style="padding: 8px;">${TotalProductsPrice > 1000 ? "Free" : 20}</td>
+        </tr>
+        <tr style="display: flex; justify-content: space-between; width: 100%; font-weight: bold;">
+            <td style="padding: 8px;">Total</td>
+            <td style="padding: 8px;">${TotalProductsPrice > 250 ? TotalProductsPrice : 20 + TotalProductsPrice}</td>
         </tr>
     </table>
-    </div>
-    
-    <div style="text-align: center; margin-top: 20px; background-color: #fb7320; padding: 14px;">
-        <img src="https://res.cloudinary.com/dgwsc8f0g/image/upload/v1739185483/features_lbnmr6.png" alt="features" style="display: block; margin: auto; max-width: 100%; height: auto;">
-    </div>
-</body>
-        <div class="categories">
-            <span>METAL</span>
-            <span>SYMPHONY</span>
-            <span>SKIN TOUCH</span>
-            <span>PLAIN</span>
-            <span>MARBLE</span>
-            <span>LEATHER</span>
-            <span>CEMENT GREY</span>
+</td>
+       
+    </tr>
+</table>
         </div>
-        <div class="social-icons">
-            <a href="https://www.facebook.com/Interiorfilmuae"> <img src="https://res.cloudinary.com/dgwsc8f0g/image/upload/v1739185482/facebook-icon_tdqcrw.png"></a>
-            <a href="https://www.pinterest.com/interiorfilmuae/"> <img src="https://res.cloudinary.com/dgwsc8f0g/image/upload/v1739185483/pinterest-icon_dsvge7.png" alt="pinterest"></a>
+        <div class="footer">
+            <p>&copy; InteriorFilm. All rights reserved.</p>
         </div>
     </div>
 </body>
 
-</html>`
+</html>
+`
         //         html: `
 
         //             <!DOCTYPE html>
