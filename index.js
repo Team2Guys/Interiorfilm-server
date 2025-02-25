@@ -61,8 +61,7 @@ app.get("/", function (req, res) {
 
 connect();
 app.listen(PORT, () => {
-  console.log(`Server is listening at https://localhost:${PORT}`);
-
+  console.log(`Server is listening at http://localhost:${PORT}`);
 });
 
 module.exports = app;
