@@ -441,7 +441,7 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
                            </tr>
                            <tr style="border-bottom: 2px solid #ccc;">
                               <td colspan="5" style="padding: 8px;" class="table-font">Shipment</td>
-                              <td style="padding: 8px;" class="table-font">${TotalProductsPrice > 1000 ? "Free" : 20}</td>
+                              <td style="padding: 8px;" class="table-font">${TotalProductsPrice > 250 ? "Free" : 20}</td>
                            </tr>
                            <tr>
                               <td colspan="5" style="padding: 8px; font-weight: bold; " class="table-font">Total</td>
