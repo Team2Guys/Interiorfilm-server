@@ -260,106 +260,93 @@ exports.postPayement = async (req, res) => {
 
 exports.proceedPayment = async (req, res) => {
   try {
-    const { data, amount, shipmentFee } = req.body
+    const { data, amount, shipmentFee } = req.body;
     const { productItems, totalAmount, subtotalAmount, ...billing_data } = data;
-    let order_id = generateUniqueString();
 
-    let sale = await Sale.findOne({ usermail: billing_data.email });
+    let order_id = generateUniqueString(); // Ensure uniqueness
+    const parsedDate = new Date();
 
-    const parsedDate = new Date()
-    var myHeaders = new Headers();
-    myHeaders.append("Authorization", `Token ${process.env.PAYMOB_SECRET_KEY}`);
-    myHeaders.append("Content-Type", "application/json");
- 
-    const staticProduct = {name: 'Shipping Fee',amount: shipmentFee === 'Free' || shipmentFee === 'undefine' ? 0 : shipmentFee * 100,};
+    let sale = await Sale.findOne({ usermail: billing_data.email, "products.order_id": { $exists: false } });
 
-    const products = productItems
-      .map(product => ({
-        ...product,
-        amount: product.totalPrice * 100,
-      }));
+    const headers = {
+      "Authorization": `Token ${process.env.PAYMOB_SECRET_KEY}`,
+      "Content-Type": "application/json"
+    };
+
+    const staticProduct = {
+      name: 'Shipping Fee',
+      amount: shipmentFee === 'Free' || typeof shipmentFee === 'undefined' ? 0 : shipmentFee * 100,
+    };
+
+    const products = productItems.map(product => ({
+      ...product,
+      amount: product.totalPrice * 100,
+    }));
 
     const updatedProducts = [...products, staticProduct];
 
-
-
-    let raw = JSON.stringify({
+    const requestBody = JSON.stringify({
       "amount": amount * 100,
       "currency": process.env.PAYMOD_CURRENCY,
-      "payment_methods": [
-        158,
-        49727,
-        52742,
-        52741,
-        52992,
-        53201
-      ],
+      "payment_methods": [158, 49727, 52742, 52741, 52992, 53201],
       "items": updatedProducts,
       "billing_data": billing_data,
       "special_reference": order_id,
       "redirection_url": "https://interiorfilm.ae/thankyou"
     });
-    console.log(myHeaders, "myHeaders")
 
-    var requestOptions = {
+    // ✅ Await fetch() to prevent race conditions
+    const response = await fetch("https://uae.paymob.com/v1/intention/", {
       method: 'POST',
-      headers: myHeaders,
-      body: raw,
+      headers: headers,
+      body: requestBody,
       redirect: 'follow'
-    };
+    });
 
+    if (!response.ok) {
+      throw new Error('Network response was not ok ' + response.statusText);
+    }
 
-    fetch("https://uae.paymob.com/v1/intention/", requestOptions)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok ' + response.statusText);
-        }
-        return response.json();
-      })
-      .then(async (result) => {
-        console.log(result.intention_order_id, "intention_order_id");
-        if (sale) {
-          const items = productItems
-            .map(product => ({
-              ...product,
-              order_id: result.intention_order_id,
-              shippment_Fee:shipmentFee === 'Free' || shipmentFee === 'undefine' ? 0 : shipmentFee
-            }));
-          sale.products = sale.products.concat(items);
-          sale.date = parsedDate ? parsedDate : Date.now()
-        } else {
-          const items = productItems
-            .map(product => ({
-              ...product,
-              order_id: result.intention_order_id,
-              shippment_Fee:shipmentFee === 'Free' || shipmentFee === 'undefine' ? 0 : shipmentFee
-            }));
-          sale = new Sale({
-            usermail: billing_data.email,
-            userAddress: billing_data.address,
-            country: billing_data.country,
-            city: billing_data.city,
-            phone_number: billing_data.phone_code + billing_data.phone_number,
-            products: items,
-            date: parsedDate,
-            first_name: billing_data.first_name,
-            last_name: billing_data.last_name,
-          });
-        }
-        await sale.save();
+    const result = await response.json();
+    console.log(result.intention_order_id, "intention_order_id");
 
+    // ✅ Prevent duplicate orders
+    const existingSale = await Sale.findOne({ "products.order_id": result.intention_order_id });
+    if (existingSale) {
+      return res.status(400).json({ message: 'Duplicate order detected' });
+    }
 
-        return res.status(201).json({ message: 'Order has been created successfully', data: result });
-      })
-      .catch(error => {
-        console.log('error', error);
-        return res.status(500).json({ message: 'Error creating order', error: error.message });
+    const items = productItems.map(product => ({
+      ...product,
+      order_id: result.intention_order_id,
+      shippment_Fee: shipmentFee === 'Free' || typeof shipmentFee === 'undefined' ? 0 : shipmentFee
+    }));
+
+    if (sale) {
+      sale.products = sale.products.concat(items);
+      sale.date = parsedDate;
+    } else {
+      sale = new Sale({
+        usermail: billing_data.email,
+        userAddress: billing_data.address,
+        country: billing_data.country,
+        city: billing_data.city,
+        phone_number: billing_data.phone_code + billing_data.phone_number,
+        products: items,
+        date: parsedDate,
+        first_name: billing_data.first_name,
+        last_name: billing_data.last_name,
       });
+    }
 
+    await sale.save();
+
+    return res.status(201).json({ message: 'Order has been created successfully', data: result });
 
   } catch (error) {
-    console.log("error from catch", error)
+    console.log("error from catch", error);
     res.status(500).json({ message: error.message || 'Internal server error', error });
   }
-}
+};
+
 
