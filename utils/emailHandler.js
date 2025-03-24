@@ -441,12 +441,11 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
                            </tr>
                            <tr style="border-bottom: 2px solid #ccc;">
                               <td colspan="5" style="padding: 8px;" class="table-font">Shipment</td>
-                              <td style="padding: 8px;" class="table-font">${TotalProductsPrice > 250 ? "Free" : 20}</td>
+                              <td style="padding: 8px;" class="table-font">${shippment_Fee === 0 ? "Free" : shippment_Fee}</td>
                            </tr>
                            <tr>
                               <td colspan="5" style="padding: 8px; font-weight: bold; " class="table-font">Total</td>
-                              <td style="padding: 8px; font-weight: bold;" class="table-font">${TotalProductsPrice > 250 ?
-                TotalProductsPrice : 20 + TotalProductsPrice}</td>
+                              <td style="padding: 8px; font-weight: bold;" class="table-font">${Number(shippment_Fee) + TotalProductsPrice}</td>
                            </tr>
                         </table>
                      </td>
