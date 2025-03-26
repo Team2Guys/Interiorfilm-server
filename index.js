@@ -21,7 +21,7 @@ app.use(express.json());
 
 app.use(cookieParser());
 
-const allowedOrigins = [
+const allowedOrigins =[
   'http://localhost:3000',
   'http://localhost:3001',
   'http://localhost:3002',
@@ -44,24 +44,23 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.use("/api", productRouter);
-app.use("/api/users", usrRouter);
-app.use("/api/admins", adminRouter);
-app.use('/api/reviews', reviewRoutes);
-app.use('/api/sales', salesRouter);
-app.use('/api/promotion', new_letter_router);
-app.use('/api/addsOn_product', Adds_products_router);
+app.use("/backend/api", productRouter);
+app.use("/backend/api/users", usrRouter);
+app.use("/backend/api/admins", adminRouter);
+app.use('/backend/api/reviews', reviewRoutes);
+app.use('/backend/api/sales', salesRouter);
+app.use('/backend/api/promotion', new_letter_router);
+app.use('/backend/api/addsOn_product', Adds_products_router);
+
+app.get("/backend", function (req, res) {
 
 
 
-
-app.get("/", function (req, res) {
-  console.log("Hello world")
   res.send("Hellow World");
 });
 
 connect();
-app.listen(PORT, () => {
+app.listen(process.env.PORT || PORT, () => {
   console.log(`Server is listening at https://localhost:${PORT}`);
 
 });
