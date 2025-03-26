@@ -21,7 +21,7 @@ const adminSchema = new Schema({
         type: Boolean,
         default: false
     },
-    canEditproduct: {
+    canEditProduct: {
         type: Boolean,
         default: false
     },
@@ -46,7 +46,7 @@ const adminSchema = new Schema({
         type: Boolean,
         default: false
     },
-    CanCheckRevnue: {
+    canCheckRevenue: {
         type: Boolean,
         default: false
     },

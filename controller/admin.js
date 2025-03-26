@@ -18,7 +18,8 @@ require('dotenv').config();
 exports.adminhanlder = async (req, res) => {
   try {
     const { fullname, email, password,
-      canAddProduct, canEditProduct,
+      canAddProduct,
+       canEditProduct,
       canDeleteProduct,
       canAddCategory,
       canDeleteCategory,
@@ -38,11 +39,15 @@ exports.adminhanlder = async (req, res) => {
       return res.status(400).json({ message: 'An admin with this email already exists' });
     }
 
+
+    console.log(canEditProduct, "canEditProduct")
+
     const newAdmin = new Admin({
       fullname,
       email,
       password,
-      canAddProduct, canEditProduct, canDeleteProduct, canAddCategory, canDeleteCategory, canEditCategory, canCheckProfit,
+      canAddProduct,
+       canEditProduct, canDeleteProduct, canAddCategory, canDeleteCategory, canEditCategory, canCheckProfit,
       canCheckRevenue,
       canCheckVisitors,
       canViewUsers,
