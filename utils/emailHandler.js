@@ -13,16 +13,13 @@ const transporter = nodemailer.createTransport({
 //   <td><span style="background-color: #${product.color}; display: inline-block; width: 20px; height: 20px; border-radius: 50%;"></span></td>
 // <th >color</th>
 
-
 const sendEmailHandler = async (name, email, phone, address, State, TotalProductsPrice, productDetails, shippment_Fee, subject, CustomerEmail, purchaseDate, orderId) => {
     console.log("name", TotalProductsPrice);
 
     const mailOptions = {
         from: process.env.MAILER_MAIL,
-        to: CustomerEmail ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2}`
-        ,
+        to: CustomerEmail ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2}`,
         subject: subject ? subject : 'Order Confirmation',
-
         html: `<!DOCTYPE html>
 <html lang="en">
 
@@ -386,8 +383,12 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
                            </div>
                         </div>
                      </td>
-                     <td class="table-font" style="text-align:center; padding: 10px 2px;">${product.price}</td>
-                     <td class="table-font" style="text-align:center; padding: 10px 2px;">${product.totalPrice}</td>
+                     <td class="table-font" style="text-align:center; padding: 10px 2px;">
+  <img src="https://res.cloudinary.com/dckxfl2yn/image/upload/v1745233698/dirham_izkz2q_ijkefr.jpg" alt="currency icon" width="11" height="11" />
+  ${product.price}
+</td>
+
+                     <td class="table-font" style="text-align:center; padding: 10px 2px;"><img src="https://res.cloudinary.com/dckxfl2yn/image/upload/v1745233698/dirham_izkz2q_ijkefr.jpg" alt="currency icon" width="11" height="11" /> ${product.totalPrice}</td>
                   </tr>
                   `).join('')}
 
@@ -404,7 +405,7 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
             <body style="font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 0;">
                <table style="width: 100%; border-collapse: collapse; text-align: left; margin: auto;">
                   <tr>
-                     <td style="width: 70%; vertical-align: top; padding: 10px  10px 10px 0px ; border-right: 2px solid #ccc;" class="user-info-wrapper">
+                     <td style="width: 65%; vertical-align: top; padding: 10px  10px 10px 0px ; border-right: 2px solid #ccc;" class="user-info-wrapper">
                         <table>
                            <tr>
                               <th style="padding: 5px 5px 0px 5px;" class="table-font">Name:</th>
@@ -432,20 +433,26 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
                            </tr>
                         </table>
                      </td>
-
-                     <td style="width: 30%;  padding: 10px 5px;" class="total-wrapper">
+                        
+                     <td style="width: 35%;  padding: 10px 5px;" class="total-wrapper">
                         <table style="border-collapse: collapse;">
                            <tr>
                               <td colspan="5" style="padding: 8px;" class="table-font">Subtotal</td>
-                              <td style="padding: 8px;" class="table-font">${TotalProductsPrice}</td>
+                              <td style="padding: 8px 4px;;" class="table-font"><img src="https://res.cloudinary.com/dckxfl2yn/image/upload/v1745233698/dirham_izkz2q_ijkefr.jpg" alt="currency icon" width="11" height="11" /> ${TotalProductsPrice}</td>
                            </tr>
                            <tr style="border-bottom: 2px solid #ccc;">
                               <td colspan="5" style="padding: 8px;" class="table-font">Shipment</td>
-                              <td style="padding: 8px;" class="table-font">${shippment_Fee === 0 ? "Free" : shippment_Fee}</td>
+                              <td style="padding: 8px 4px;" class="table-font">
+                                ${shippment_Fee === 0 || shippment_Fee === '0'
+                                          ? "Free"
+                                          : `<img src="https://res.cloudinary.com/dckxfl2yn/image/upload/v1745233698/dirham_izkz2q_ijkefr.jpg" alt="currency icon" width="11" height="11" style="vertical-align: middle; margin-right: 2px;" />${shippment_Fee}`
+                                       }
+                              </td>
+                                    
                            </tr>
                            <tr>
                               <td colspan="5" style="padding: 8px; font-weight: bold; " class="table-font">Total</td>
-                              <td style="padding: 8px; font-weight: bold;" class="table-font">${Number(shippment_Fee) + TotalProductsPrice}</td>
+                              <td style="padding: 8px 4px;; font-weight: bold;" class="table-font"><img src="https://res.cloudinary.com/dckxfl2yn/image/upload/v1745233698/dirham_izkz2q_ijkefr.jpg" alt="currency icon" width="11" height="11" /> ${Number(shippment_Fee) + TotalProductsPrice}</td>
                            </tr>
                         </table>
                      </td>
