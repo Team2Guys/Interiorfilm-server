@@ -208,15 +208,20 @@ exports.postPayement = async (req, res) => {
     if (!successFlag) return res.status(404).json({ message: 'Payment not successfull' });
 
     const saleRecord = await Sale.findOne({ "products": { $elemMatch: { order_id: order_id } } });
-    console.log(saleRecord, "saleRecord",
+    console.log(saleRecord.paymentStatus, "saleRecord",
     )
     if (!saleRecord) throw new Error('Product not found');
+
 
     let filteredProduct = saleRecord.products.filter((item) => item.order_id == order_id);
 
 
+    
     if (filteredProduct.length === 0) throw new Error('Product not found');
 
+      if (filteredProduct?.[0].paymentStatus) {
+      return res.status(400).json({ message: 'Duplicate order detected' });
+    }
     let TotalPrice = 0;
     let shippment_Fee = "";
 
