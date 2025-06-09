@@ -8,6 +8,7 @@ const { sendEmailHandler } = require('../utils/emailHandler.js')
 const axios = require('axios');
 const dotenv = require('dotenv');
 const { v4: uuidv4 } = require('uuid');
+const Adds_products = require('../models/add.js');
 
 const uniqueId = uuidv4();
 
@@ -216,10 +217,10 @@ exports.postPayement = async (req, res) => {
     let filteredProduct = saleRecord.products.filter((item) => item.order_id == order_id);
 
 
-    
+
     if (filteredProduct.length === 0) throw new Error('Product not found');
 
-      if (filteredProduct?.[0].paymentStatus) {
+    if (filteredProduct?.[0].paymentStatus) {
       return res.status(400).json({ message: 'Duplicate order detected' });
     }
     let TotalPrice = 0;
@@ -232,7 +233,13 @@ exports.postPayement = async (req, res) => {
 
       let product = await Productdb.findById(id);
       if (!product) {
-        return res.status(404).json({ message: "Product not found" });
+        let Addsproduct = await Adds_products.findById(id);
+        if (!Addsproduct) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+
+        product = Addsproduct;
+
       }
       product.totalStockQuantity -= orderRecord.length;
 
