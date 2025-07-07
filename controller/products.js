@@ -537,10 +537,12 @@ console.log('Function Called' , `${process.env.CONTACTUS_MAIL1},${process.env.CO
 
         await transporter.sendMail({
             from: `"Contact us form " ${process.env.MAILER_MAIL}`,
-            to: `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2},${process.env.CONTACTUS_MAIL3} ${process.env.CONTACTUS_MAIL4}`,
+            to: `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2},${process.env.CONTACTUS_MAIL3},${process.env.CONTACTUS_MAIL4}`,
             subject: 'New message from contact form',
             html: emailTemplate,
         });
+
+                console.log('After user email', "error")
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
@@ -552,6 +554,7 @@ console.log('Function Called' , `${process.env.CONTACTUS_MAIL1},${process.env.CO
             }
         });
     } catch (err) {
+        console.log(err, "error")
         res.status(500).send('Error sending email');
     }
 };

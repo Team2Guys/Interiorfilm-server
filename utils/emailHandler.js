@@ -3,24 +3,24 @@ const nodemailer = require('nodemailer');
 const path = require('path')
 
 const transporter = nodemailer.createTransport({
-    host: 'mail.blindsandcurtains.ae',
-    port: 587,
-    secure: false,
-    auth: {
-        user: `${process.env.ADMIN_MAIL}`,
-        pass: `${process.env.ADMIN_PASSWORD}`,
-    },
+   host: 'mail.blindsandcurtains.ae',
+   port: 587,
+   secure: false,
+   auth: {
+      user: `${process.env.ADMIN_MAIL}`,
+      pass: `${process.env.ADMIN_PASSWORD}`,
+   },
 });
 
 const sendEmailHandler = async (name, email, phone, address, State, TotalProductsPrice, productDetails, shippment_Fee, subject, CustomerEmail, purchaseDate, orderId) => {
-    console.log("name", TotalProductsPrice);
+   console.log("name", TotalProductsPrice);
 
-    const mailOptions = {
+   const mailOptions = {
       //   from:process.env.MAILER_MAIL,
-         from: `"Order Confirmation" <${process.env.MAILER_MAIL}>`,
-        to: CustomerEmail ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2},${process.env.CONTACTUS_MAIL3} ${process.env.CONTACTUS_MAIL4}`,
-        subject: subject ? subject : 'Order Confirmation',
-        html: `<!DOCTYPE html>
+      from: `"Order Confirmation" <${process.env.MAILER_MAIL}>`,
+      to: CustomerEmail ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2},${process.env.CONTACTUS_MAIL3},${process.env.CONTACTUS_MAIL4}`,
+      subject: subject ? subject : 'Order Confirmation',
+      html: `<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -444,9 +444,9 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
                               <td colspan="5" style="padding: 8px;" class="table-font">Shipment</td>
                               <td style="padding: 8px 4px;     white-space: nowrap;" class="table-font">
                                 ${shippment_Fee === 0 || shippment_Fee === '0'
-                                          ? "Free"
-                                          : `<img src="https://res.cloudinary.com/dckxfl2yn/image/upload/v1745233698/dirham_izkz2q_ijkefr.jpg" alt="currency icon" width="11" height="11" style="vertical-align: middle; margin-right: 2px;" />${shippment_Fee}`
-                                       }
+            ? "Free"
+            : `<img src="https://res.cloudinary.com/dckxfl2yn/image/upload/v1745233698/dirham_izkz2q_ijkefr.jpg" alt="currency icon" width="11" height="11" style="vertical-align: middle; margin-right: 2px;" />${shippment_Fee}`
+         }
                               </td>
                                     
                            </tr>
@@ -488,62 +488,62 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
 </body>
 
 </html>`
-       
-
-    };
 
 
-    try {
-        transporter.sendMail(mailOptions, function (error, info) {
-            if (error) {
-                console.error('Error sending email:', error);
-                throw new Error(error.message || JSON.stringify(error))
+   };
 
-            } else {
-                console.log('Email sent:', info.response);
-                return info.response
-            }
-        });
-    } catch (error) {
-        throw new Error(error.message)
-    }
+
+   try {
+      transporter.sendMail(mailOptions, function (error, info) {
+         if (error) {
+            console.error('Error sending email:', error);
+            throw new Error(error.message || JSON.stringify(error))
+
+         } else {
+            console.log('Email sent:', info.response);
+            return info.response
+         }
+      });
+   } catch (error) {
+      throw new Error(error.message)
+   }
 
 
 };
 
 
 const send_promotional_mails = (user_email, content, subject) => {
-    const htmlFilePath = path.join(__dirname, 'template/promotional_email/index.html');
-    fs.readFile(htmlFilePath, 'utf-8', (err, htmlContent) => {
-        if (err) {
-            console.error('Error reading HTML file:', err);
-            return;
-        }
+   const htmlFilePath = path.join(__dirname, 'template/promotional_email/index.html');
+   fs.readFile(htmlFilePath, 'utf-8', (err, htmlContent) => {
+      if (err) {
+         console.error('Error reading HTML file:', err);
+         return;
+      }
 
-        const mailOptions = {
-            from: process.env.MAILER_MAIL,
-            to: user_email,
-            subject: subject ? subject : 'Promotional Mail',
-            html: htmlContent
-        };
+      const mailOptions = {
+         from: process.env.MAILER_MAIL,
+         to: user_email,
+         subject: subject ? subject : 'Promotional Mail',
+         html: htmlContent
+      };
 
-        try {
-            transporter.sendMail(mailOptions, function (error, info) {
-                if (error) {
-                    console.error('Error sending email:', error);
-                } else {
-                    console.log('Email sent:', info.response);
-                }
-            });
-        } catch (error) {
-            console.error('Error during mail sending:', error.message);
-        }
-    });
+      try {
+         transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+               console.error('Error sending email:', error);
+            } else {
+               console.log('Email sent:', info.response);
+            }
+         });
+      } catch (error) {
+         console.error('Error during mail sending:', error.message);
+      }
+   });
 }
 
 
 
 module.exports = {
-    sendEmailHandler,
-    send_promotional_mails
+   sendEmailHandler,
+   send_promotional_mails
 };
