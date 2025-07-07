@@ -390,6 +390,7 @@ const transporter = nodemailer.createTransport({
 
 exports.sendEmailHandler = async (req, res) => {
     const { user_name, user_email, comment, user_phone } = req.body;
+
     try {
         const emailTemplate = `<!DOCTYPE html>
   <html lang="en">
@@ -523,6 +524,8 @@ exports.sendEmailHandler = async (req, res) => {
 
 </html>
 `
+
+console.log('Function Called' , `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2},${process.env.CONTACTUS_MAIL3} ${process.env.CONTACTUS_MAIL4}`)
         const mailOptions = {
             from: process.env.MAILER_MAIL,
             to: user_email,
