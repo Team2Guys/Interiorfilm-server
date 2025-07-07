@@ -391,11 +391,7 @@ const transporter = nodemailer.createTransport({
 exports.sendEmailHandler = async (req, res) => {
     const { user_name, user_email, comment, user_phone } = req.body;
     try {
-        const mailOptions = {
-            from: process.env.MAILER_MAIL,
-            to: user_email,
-            subject: 'New message from contact form',
-            html: `<!DOCTYPE html>
+        const emailTemplate = `<!DOCTYPE html>
   <html lang="en">
 
 <head>
@@ -527,7 +523,21 @@ exports.sendEmailHandler = async (req, res) => {
 
 </html>
 `
+        const mailOptions = {
+            from: process.env.MAILER_MAIL,
+            to: user_email,
+            subject: 'New message from contact form',
+            html: emailTemplate
+
+
         };
+
+        await transporter.sendMail({
+            from: `"Contact us form " ${process.env.MAILER_MAIL}`,
+            to: `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2},${process.env.CONTACTUS_MAIL3} ${process.env.CONTACTUS_MAIL4}`,
+            subject: 'New message from contact form',
+            html: emailTemplate,
+        });
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
@@ -541,8 +551,6 @@ exports.sendEmailHandler = async (req, res) => {
     } catch (err) {
         res.status(500).send('Error sending email');
     }
-
-
 };
 
 
