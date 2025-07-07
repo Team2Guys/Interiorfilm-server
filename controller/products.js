@@ -503,7 +503,7 @@ exports.sendEmailHandler = async (req, res) => {
 <body>
     <section class="container">
         <div class="logo-wrapper">
-            <img src="https://res.cloudinary.com/dz7nqwiev/image/upload/v1727692832/interiorFilms/Logo_Images/logo_sdrxse.png" alt="logo"  height="50">
+            <img src="https://res.cloudinary.com/dqvywckz8/image/upload/v1740575139/Frame_1321315836_z0ujlv.jpg" alt="logo"  height="50">
         </div>
         <div class="email-content-wrapper">
               
