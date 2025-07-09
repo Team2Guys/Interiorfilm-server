@@ -7,6 +7,8 @@ const nodemailer = require('nodemailer');
 const dburl = require('../utils/dbhandlers.js')
 
 const Sales = require('../models/salesModel.js');
+const { generateSlug } = require("../utils/helperHandlers.js");
+const Adds_products = require("../models/add.js");
 
 
 
@@ -273,7 +275,7 @@ exports.getProductHandler = async (req, res) => {
     try {
         const categoryId = req.params.id;
 
-        let category = await CategoryDb.findById(categoryId)
+        let category = await CategoryDb.findById(categoryId,)
         if (!category) {
             return res.status(404).json({ error: 'No Category found' });
         }
@@ -525,7 +527,7 @@ exports.sendEmailHandler = async (req, res) => {
 </html>
 `
 
-console.log('Function Called' , `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2},${process.env.CONTACTUS_MAIL3} ${process.env.CONTACTUS_MAIL4}`)
+        console.log('Function Called', `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2},${process.env.CONTACTUS_MAIL3} ${process.env.CONTACTUS_MAIL4}`)
         const mailOptions = {
             from: process.env.MAILER_MAIL,
             to: user_email,
@@ -542,7 +544,7 @@ console.log('Function Called' , `${process.env.CONTACTUS_MAIL1},${process.env.CO
             html: emailTemplate,
         });
 
-                console.log('After user email', "error")
+        console.log('After user email', "error")
 
         transporter.sendMail(mailOptions, function (error, info) {
             if (error) {
@@ -582,3 +584,52 @@ exports.getPaginateProducts = async (req, res) => {
 
 
 
+exports.getCategoryWithProductsByName = async (req, res) => {
+    try {
+        const categoryName = req.params.name;
+
+        const categories = await CategoryDb.find();
+
+        const category = categories.find(cat => generateSlug(cat.name) === categoryName);
+        console.log(category, "categories")
+        if (!category) {
+            return res.status(404).json({ error: 'Category not found' });
+        }
+
+        const productModel = categoryName === "accessories" ? Adds_products : Productdb;
+
+        const products = await productModel.find({ category: category._id }).select('name _id code totalStockQuantity salePrice colors posterImageUrl imageUrl'); 
+        
+        return res.status(200).json({
+            category: { ...category._doc, products },
+        });
+
+    } catch (err) {
+        console.error('Error:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
+exports.getCategoryonlyMetatitle = async (req, res) => {
+    try {
+        const categoryName = req.params.name;
+
+        const categories = await CategoryDb.find().select("name _id Meta_Title Meta_Description Canonical_Tag posterImageUrl ");
+
+        const category = categories.find(cat => generateSlug(cat.name) === categoryName);
+        console.log(category, "categories")
+        if (!category) {
+            return res.status(404).json({ error: 'Category not found' });
+        }
+
+
+        return res.status(200).json({
+            category: { ...category._doc,},
+        });
+
+    } catch (err) {
+        console.error('Error:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
