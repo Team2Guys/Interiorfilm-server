@@ -598,8 +598,8 @@ exports.getCategoryWithProductsByName = async (req, res) => {
 
         const productModel = categoryName === "accessories" ? Adds_products : Productdb;
 
-        const products = await productModel.find({ category: category._id }).select('name _id code totalStockQuantity salePrice colors posterImageUrl imageUrl'); 
-        
+        const products = await productModel.find({ category: category._id }).select('name _id code totalStockQuantity salePrice colors posterImageUrl imageUrl');
+
         return res.status(200).json({
             category: { ...category._doc, products },
         });
@@ -625,7 +625,38 @@ exports.getCategoryonlyMetatitle = async (req, res) => {
 
 
         return res.status(200).json({
-            category: { ...category._doc,},
+            category: { ...category._doc, },
+        });
+
+    } catch (err) {
+        console.error('Error:', err);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
+
+
+
+// GetCustomized Fiels 
+
+
+exports.getCategorywihtCustomorizeField = async (req, res) => {
+    try {
+        const { categoryName, query } = req.body;
+        if (!query) return res.status(404).json({ message: "Query not found" })
+        console.log(query, "query")
+        const categories = await CategoryDb.find().select(query);
+        if (!categoryName) return res.status(200).json({ categories })
+        const category = categories.find(cat => generateSlug(cat.name) === categoryName);
+        console.log(category, "categories")
+        if (!category) {
+            return res.status(404).json({ error: 'Category not found' });
+        }
+
+
+        return res.status(200).json({
+            category: { ...category._doc, },
         });
 
     } catch (err) {

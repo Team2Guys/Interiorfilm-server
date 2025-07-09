@@ -28,6 +28,7 @@ const ApiEndPoints = {
     Removeimage: "/removeProductImage",
     getCategoryWithProductsByName : "/findSigneCategory/:name",
     getCategoryonlyMetatitle : "/getCategoryonlyMetatitle/:name",
+    getCategorywihtCustomorizeField : "/getCategorywihtCustomorizeField",
 
     // email
     email: "/sendEmail",
@@ -63,6 +64,7 @@ router.delete(ApiEndPoints.deleteCategory, controller.deleteCategory);
 router.get(ApiEndPoints.getCategory, controller.getCategory);
 router.get(ApiEndPoints.getCategoryWithProductsByName, controller.getCategoryWithProductsByName);
 router.get(ApiEndPoints.getCategoryonlyMetatitle, controller.getCategoryonlyMetatitle);
+router.post(ApiEndPoints.getCategorywihtCustomorizeField, controller.getCategorywihtCustomorizeField);
 
 
 module.exports = router;
