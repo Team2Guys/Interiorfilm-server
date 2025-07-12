@@ -590,8 +590,8 @@ exports.getCategoryWithProductsByName = async (req, res) => {
         const categoryName = req.params.name;
 
         const categories = await CategoryDb.find();
-console.log(categoryName, "categoryName", categories)
-        const category = categories.find(cat =>( cat.custom_url || generateSlug(cat.name)) === categoryName);
+        console.log(categoryName, "categoryName", categories)
+        const category = categories.find(cat => (cat.custom_url || generateSlug(cat.name)) === categoryName);
         if (!category) {
             return res.status(404).json({ error: 'Category not found' });
         }
@@ -599,8 +599,8 @@ console.log(categoryName, "categoryName", categories)
         const productModel = category.name === "Accessories" ? Adds_products : Productdb;
 
 
-        const products = await productModel.find({ category: category._id}).select('name _id code totalStockQuantity salePrice colors posterImageUrl imageUrl');
-const addson = await productModel.find()
+        const products = await productModel.find({ category: category._id }).select('name _id code totalStockQuantity salePrice colors posterImageUrl imageUrl');
+        const addson = await productModel.find()
         return res.status(200).json({
             category: { ...category._doc, products },
         });
@@ -680,13 +680,18 @@ exports.getSingleProduct = async (req, res) => {
         const { categoryName, productname } = req.body;
         const productModel = categoryName === "accessories" ? Adds_products : Productdb;
 
-        let product = await productModel.findOne({ $or: [{ custom_url: productname }, { name: productname }] })
-        let categorydb = await CategoryDb.findOne({ $or: [{ custom_url: categoryName }, { name: categoryName }] })
+        const [product, categorydb] = await Promise.all([
+            productModel.findOne({ $or: [{ custom_url: productname }, { name: productname }] }),
+            CategoryDb.findOne({ $or: [{ custom_url: categoryName }, { name: categoryName }] }),
+        ]);
+
         if (!product || !categorydb) {
             return res.status(404).json({
                 error: "product not found first"
             })
         }
+
+        const products = await productModel.find({ category: categorydb._id }).select('name _id code totalStockQuantity salePrice category posterImageUrl');
 
 
         if (product.category._id.toString() !== categorydb?._id?.toString()) {
@@ -695,7 +700,8 @@ exports.getSingleProduct = async (req, res) => {
             })
         }
         return res.status(200).json({
-            product
+            product,
+            products: products.filter((value) => value.custom_url || value.name !== productname)
         })
     } catch (error) {
         console.error(error);
