@@ -4,7 +4,7 @@ const router = Router();
 
 const generalApiEndpoints = {
     addredirecturl: "/addredirecturl",
-    getSignleredirecturl: "/getSignleredirecturl/:url",
+    getSignleredirecturl: "/getSignleredirecturl",
     updateredirecturl: "/updateredirecturl/:url",
     getredirecturl: "/getredirecturl",
     deleteredirecturl: "/deleteredirecturl/:url"
@@ -13,7 +13,7 @@ const generalApiEndpoints = {
 
 
 router.post(generalApiEndpoints.addredirecturl, generalController.createRedirecturl);
-router.get(generalApiEndpoints.getSignleredirecturl, generalController.findSingleRedirect);
+router.post(generalApiEndpoints.getSignleredirecturl, generalController.findSingleRedirect);
 router.patch(generalApiEndpoints.updateredirecturl, generalController.updateRedirectUrl);
 router.get(generalApiEndpoints.getredirecturl, generalController.findAll);
 router.delete(generalApiEndpoints.deleteredirecturl, generalController.DeleteRedirect);
