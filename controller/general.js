@@ -54,10 +54,10 @@ exports.findAll = async (req, res) => {
 
 
 exports.updateRedirectUrl = async (req, res) => {
-    const {url} = req.params
+    const { url } = req.params
     const updatedAt = new Date()
     try {
-        let existingRedirectUrl = await RedirectDb.findOne({_id:url})
+        let existingRedirectUrl = await RedirectDb.findOne({ _id: url })
         if (!existingRedirectUrl) {
             return res.status(404).json({
                 error: "RedirectUrl not found"
@@ -66,7 +66,7 @@ exports.updateRedirectUrl = async (req, res) => {
         }
 
         const redirecturl = await RedirectDb.updateOne(
-            { _id:url },
+            { _id: url },
             { $set: { ...req.body, updatedAt } }
         );
 
@@ -92,7 +92,7 @@ exports.updateRedirectUrl = async (req, res) => {
 
 exports.findSingleRedirect = async (req, res) => {
     const { url } = req.body
-    
+
     if (!url) {
         return res.status(404).json({
             error: "RedirectUrl not found from body"
