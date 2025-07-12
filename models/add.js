@@ -102,6 +102,14 @@ const productSchema = new Schema({
     type: String,
   },
 
+  custom_url: {
+    type: String,
+    require: true,
+  },
+  breadcum: {
+    type: String,
+  },
+
 
 });
 

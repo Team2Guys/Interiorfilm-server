@@ -37,6 +37,14 @@ const categorySchema = new mongoose.Schema({
   Canonical_Tag: {
     type: String,
   },
+  
+  custom_url: {
+    type: String,
+    require: true,
+  },
+  breadcum: {
+    type: String,
+  },
 
 });
 

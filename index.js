@@ -7,10 +7,11 @@ const adminRouter = require("./routes/admin");
 const salesRouter = require("./routes/sales");
 const new_letter_router = require("./routes/news_letter_routes");
 const Adds_products_router = require("./routes/adds_productRoutes");
+const generalRouter = require("./routes/general_routes");
+const reviewRoutes = require('./routes/review');
 
 
 let cookieParser = require('cookie-parser');
-const reviewRoutes = require('./routes/review');
 
 const connect = require("./helper/connect");
 require("dotenv").config();
@@ -51,6 +52,7 @@ app.use('/backend/api/reviews', reviewRoutes);
 app.use('/backend/api/sales', salesRouter);
 app.use('/backend/api/promotion', new_letter_router);
 app.use('/backend/api/addsOn_product', Adds_products_router);
+app.use('/backend/api/general', generalRouter);
 
 app.get("/backend", function (req, res) {
 

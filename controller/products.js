@@ -636,11 +636,6 @@ exports.getCategoryonlyMetatitle = async (req, res) => {
 
 
 
-
-
-// GetCustomized Fiels 
-
-
 exports.getCategorywihtCustomorizeField = async (req, res) => {
     try {
         const { categoryName, query } = req.body;
@@ -664,3 +659,16 @@ exports.getCategorywihtCustomorizeField = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
+
+
+
+exports.getAllcategories = async (req, res) => {
+    try {
+        const Categories = await CategoryDb.find();
+
+        return res.status(201).json(Categories);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
