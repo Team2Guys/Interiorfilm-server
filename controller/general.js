@@ -54,7 +54,7 @@ exports.findAll = async (req, res) => {
 
 
 exports.updateRedirectUrl = async (req, res) => {
-    const { url} = req.body
+    const { url } = req.body
     const updatedAt = new Date()
     try {
         let existingRedirectUrl = await RedirectDb.findOne({ url: url })
@@ -65,7 +65,7 @@ exports.updateRedirectUrl = async (req, res) => {
 
         }
 
-    const redirecturl =  await RedirectDb.updateOne(
+        const redirecturl = await RedirectDb.updateOne(
             { url },
             { $set: { ...req.body, updatedAt } }
         );
@@ -91,16 +91,23 @@ exports.updateRedirectUrl = async (req, res) => {
 
 
 exports.findSingleRedirect = async (req, res) => {
-    const { url, } = req.body
+    const { url } = req.params
+    
+    if (!url) {
+        return res.status(404).json({
+            error: "RedirectUrl not found from body"
+        })
 
+    }
     try {
-        let existingRedirectUrl = await RedirectDb.findOne({ url: url })
+        let existingRedirectUrl = await RedirectDb.findOne({ url: url.trim() })
         if (!existingRedirectUrl) {
             return res.status(404).json({
                 error: "RedirectUrl not found"
             })
 
         }
+        console.log(url, "urls", existingRedirectUrl)
         return res.status(200).json({
             redirectUrl: existingRedirectUrl
         })
@@ -120,7 +127,7 @@ exports.findSingleRedirect = async (req, res) => {
 
 
 exports.DeleteRedirect = async (req, res) => {
-    const { url } = req.body
+    const { url } = req.params
 
     try {
         let existingRedirectUrl = await RedirectDb.deleteOne({ url: url })

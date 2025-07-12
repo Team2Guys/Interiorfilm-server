@@ -29,6 +29,7 @@ const ApiEndPoints = {
     getCategoryWithProductsByName : "/findSigneCategory/:name",
     getCategoryonlyMetatitle : "/getCategoryonlyMetatitle/:name",
     getCategorywihtCustomorizeField : "/getCategorywihtCustomorizeField",
+    getSingleProduct : "/getSingleProduct",
 
     // email
     email: "/sendEmail",
@@ -46,6 +47,7 @@ router.delete(ApiEndPoints.deleteProduct, controller.deleteProduct)
 router.post(ApiEndPoints.addProductImage, upload.array('image'), controller.addProductImage)
 router.post(ApiEndPoints.updateProduct, controller.productHanler)
 router.delete(ApiEndPoints.Removeimage, authenticate, controller.deleteProductImage)
+router.post(ApiEndPoints.getSingleProduct, controller.getSingleProduct);
 
 
 

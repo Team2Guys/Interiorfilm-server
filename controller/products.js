@@ -21,14 +21,15 @@ cloudinary.config({
 exports.addProduct = async (req, res) => {
     try {
         const name = req.body.name
+        const custom_url = req.body.custom_url
         const code = req.body.code;
 
         console.log(code, "code", "name", name)
-        if (!name || !code) return res.status(400).json({
+        if (!name || !code || !custom_url) return res.status(400).json({
             error: "Product name or code not found",
         })
         let totalQuntity = req.body.totalStockQuantity
-        let existingProduct = await Productdb.findOne({ $or: [{ name: name }, { code: code }] });
+        let existingProduct = await Productdb.findOne({ $or: [{ name: name }, { code: code }, { custom_url }] });
 
         console.log("existingProduct", existingProduct)
 
@@ -223,9 +224,9 @@ exports.getProduct = async (req, res) => {
 
 exports.AddCategory = async (req, res) => {
     try {
-        const { name, posterImageUrl } = req.body;
+        const { name, custom_url, posterImageUrl } = req.body;
         if (!req.body) return res.status(401).json({ error: 'Data not found' });
-        const existingCategory = await CategoryDb.findOne({ name });
+        const existingCategory = await CategoryDb.findOne({ $or: [{ name }, { custom_url }] });
         if (existingCategory) {
             return res.status(400).json({ error: 'Category already exists' });
         }
@@ -590,7 +591,7 @@ exports.getCategoryWithProductsByName = async (req, res) => {
 
         const categories = await CategoryDb.find();
 
-        const category = categories.find(cat => generateSlug(cat.name) === categoryName);
+        const category = categories.find(cat => cat.custom_url || generateSlug(cat.name) === categoryName);
         console.log(category, "categories")
         if (!category) {
             return res.status(404).json({ error: 'Category not found' });
@@ -617,7 +618,7 @@ exports.getCategoryonlyMetatitle = async (req, res) => {
 
         const categories = await CategoryDb.find().select("name _id Meta_Title Meta_Description Canonical_Tag posterImageUrl ");
 
-        const category = categories.find(cat => generateSlug(cat.name) === categoryName);
+        const category = categories.find(cat => cat.custom_url || generateSlug(cat.name) === categoryName);
         console.log(category, "categories")
         if (!category) {
             return res.status(404).json({ error: 'Category not found' });
@@ -640,10 +641,11 @@ exports.getCategorywihtCustomorizeField = async (req, res) => {
     try {
         const { categoryName, query } = req.body;
         if (!query) return res.status(404).json({ message: "Query not found" })
-        console.log(query, "query")
+
+
         const categories = await CategoryDb.find().select(query);
         if (!categoryName) return res.status(200).json({ categories })
-        const category = categories.find(cat => generateSlug(cat.name) === categoryName);
+        const category = categories.find(cat => cat.custom_url || generateSlug(cat.name) === categoryName);
         console.log(category, "categories")
         if (!category) {
             return res.status(404).json({ error: 'Category not found' });
@@ -672,3 +674,35 @@ exports.getAllcategories = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 }
+
+
+
+exports.getSingleProduct = async (req, res) => {
+    try {
+        const { categoryName, productname } = req.body;
+        const productModel = categoryName === "accessories" ? Adds_products : Productdb;
+
+        let product = await productModel.findOne({ $or: [{ custom_url: productname }, { name: productname }] })
+        let categorydb = await CategoryDb.findOne({ $or: [{ custom_url: categoryName }, { name: categoryName }] })
+        if (!product || !categorydb) {
+            return res.status(404).json({
+                error: "product not found first"
+            })
+        }
+
+
+        if (product.category._id.toString() !== categorydb?._id?.toString()) {
+            return res.status(404).json({
+                error: "product not found"
+            })
+        }
+        return res.status(200).json({
+            product
+        })
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+
