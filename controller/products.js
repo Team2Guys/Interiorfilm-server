@@ -70,7 +70,7 @@ exports.addProduct = async (req, res) => {
 
 exports.getAllproducts = async (req, res) => {
     try {
-        let products = await Productdb.find();
+        let products = await Productdb.find().populate('category');
         if (!products) {
             return res.status(200).json({ message: "No products found" })
         }
@@ -600,7 +600,6 @@ exports.getCategoryWithProductsByName = async (req, res) => {
 
 
         const products = await productModel.find({ category: category._id }).select('name _id code totalStockQuantity salePrice colors posterImageUrl imageUrl');
-        const addson = await productModel.find()
         return res.status(200).json({
             category: { ...category._doc, products },
         });
