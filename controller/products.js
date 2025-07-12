@@ -680,18 +680,26 @@ exports.getSingleProduct = async (req, res) => {
         const { categoryName, productname } = req.body;
         const productModel = categoryName === "accessories" ? Adds_products : Productdb;
 
-        const [product, categorydb] = await Promise.all([
-            productModel.findOne({ $or: [{ custom_url: productname }, { name: productname }] }),
-            CategoryDb.findOne({ $or: [{ custom_url: categoryName }, { name: categoryName }] }),
-        ]);
 
-        if (!product || !categorydb) {
+        const categories = await CategoryDb.find()
+
+        const categorydb = categories.find((value) => (value.custom_url || generateSlug(value.name)?.trim()) == categoryName)
+        console.log()
+
+        const products = await productModel.find({ category: categorydb._id })
+
+
+
+
+        let product = products.find((value) => (value.custom_url || generateSlug(value.name)?.trim()) == productname)
+
+
+if (!product || !categorydb) {
             return res.status(404).json({
-                error: "product not found first"
+                error: "product not found first",
             })
         }
 
-        const products = await productModel.find({ category: categorydb._id }).select('name _id code totalStockQuantity salePrice category posterImageUrl');
 
 
         if (product.category._id.toString() !== categorydb?._id?.toString()) {
@@ -699,9 +707,21 @@ exports.getSingleProduct = async (req, res) => {
                 error: "product not found"
             })
         }
+
+        const filteredProducts = products
+            .filter(p => p.custom_url?.trim() !== productname?.trim() && p.name?.trim() !== productname?.trim())
+            .map(p => ({
+                _id: p._id,
+                name: p.name,
+                code: p.code,
+                totalStockQuantity: p.totalStockQuantity,
+                salePrice: p.salePrice,
+                category: p.category,
+                posterImageUrl: p.posterImageUrl
+            }));
         return res.status(200).json({
             product,
-            products: products.filter((value) => value.custom_url || value.name !== productname)
+            products: filteredProducts
         })
     } catch (error) {
         console.error(error);
