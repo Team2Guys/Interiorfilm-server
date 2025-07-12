@@ -599,7 +599,7 @@ exports.getCategoryWithProductsByName = async (req, res) => {
         const productModel = category.name === "Accessories" ? Adds_products : Productdb;
 
 
-        const products = await productModel.find({ category: category._id }).select('name _id code totalStockQuantity salePrice colors posterImageUrl imageUrl');
+        const products = await productModel.find({ category: category._id }).select('name _id custom_url code totalStockQuantity salePrice colors posterImageUrl imageUrl');
         return res.status(200).json({
             category: { ...category._doc, products },
         });
@@ -615,7 +615,7 @@ exports.getCategoryonlyMetatitle = async (req, res) => {
     try {
         const categoryName = req.params.name;
 
-        const categories = await CategoryDb.find().select("name _id Meta_Title Meta_Description Canonical_Tag posterImageUrl ");
+        const categories = await CategoryDb.find().select("name _id custom_url Meta_Title Meta_Description Canonical_Tag posterImageUrl ");
 
         const category = categories.find(cat => cat.custom_url || generateSlug(cat.name) === categoryName);
         console.log(category, "categories", "Callingfrom meta")
@@ -693,7 +693,7 @@ exports.getSingleProduct = async (req, res) => {
         let product = products.find((value) => (value.custom_url || generateSlug(value.name)?.trim()) == productname)
 
 
-if (!product || !categorydb) {
+        if (!product || !categorydb) {
             return res.status(404).json({
                 error: "product not found first",
             })
@@ -713,6 +713,7 @@ if (!product || !categorydb) {
                 _id: p._id,
                 name: p.name,
                 code: p.code,
+                custom_url:p.custom_url,
                 totalStockQuantity: p.totalStockQuantity,
                 salePrice: p.salePrice,
                 category: p.category,
