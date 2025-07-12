@@ -590,17 +590,17 @@ exports.getCategoryWithProductsByName = async (req, res) => {
         const categoryName = req.params.name;
 
         const categories = await CategoryDb.find();
-
-        const category = categories.find(cat => cat.custom_url || generateSlug(cat.name) === categoryName);
-        console.log(category, "categories")
+console.log(categoryName, "categoryName", categories)
+        const category = categories.find(cat =>( cat.custom_url || generateSlug(cat.name)) === categoryName);
         if (!category) {
             return res.status(404).json({ error: 'Category not found' });
         }
 
-        const productModel = categoryName === "accessories" ? Adds_products : Productdb;
+        const productModel = category.name === "Accessories" ? Adds_products : Productdb;
 
-        const products = await productModel.find({ category: category._id }).select('name _id code totalStockQuantity salePrice colors posterImageUrl imageUrl');
 
+        const products = await productModel.find({ category: category._id}).select('name _id code totalStockQuantity salePrice colors posterImageUrl imageUrl');
+const addson = await productModel.find()
         return res.status(200).json({
             category: { ...category._doc, products },
         });
@@ -619,7 +619,7 @@ exports.getCategoryonlyMetatitle = async (req, res) => {
         const categories = await CategoryDb.find().select("name _id Meta_Title Meta_Description Canonical_Tag posterImageUrl ");
 
         const category = categories.find(cat => cat.custom_url || generateSlug(cat.name) === categoryName);
-        console.log(category, "categories")
+        console.log(category, "categories", "Callingfrom meta")
         if (!category) {
             return res.status(404).json({ error: 'Category not found' });
         }
@@ -646,7 +646,6 @@ exports.getCategorywihtCustomorizeField = async (req, res) => {
         const categories = await CategoryDb.find().select(query);
         if (!categoryName) return res.status(200).json({ categories })
         const category = categories.find(cat => cat.custom_url || generateSlug(cat.name) === categoryName);
-        console.log(category, "categories")
         if (!category) {
             return res.status(404).json({ error: 'Category not found' });
         }
@@ -661,7 +660,6 @@ exports.getCategorywihtCustomorizeField = async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 };
-
 
 
 exports.getAllcategories = async (req, res) => {
