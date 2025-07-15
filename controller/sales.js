@@ -128,7 +128,7 @@ exports.recordSale = async (req, res) => {
     if (sale) {
       sale.products = sale.products.concat(products);
       sale.date = parsedDate ? parsedDate : Date.now()
-      sales.shipmentFee = shipmentFee
+      sale.shipmentFee = shipmentFee
     } else {
       sale = new Sale({
         usermail: extractedData.email,
@@ -300,7 +300,9 @@ exports.proceedPayment = async (req, res) => {
     const requestBody = JSON.stringify({
       "amount": amount * 100,
       "currency": process.env.PAYMOD_CURRENCY,
-      "payment_methods": [158, 49727, 52742, 52741, 52992, 53201],
+      "payment_methods": [46374],
+      // "payment_methods": [158, 49727, 52742, 52741, 52992, 53201],
+
       "items": updatedProducts,
       "billing_data": billing_data,
       "special_reference": order_id,
@@ -315,6 +317,7 @@ exports.proceedPayment = async (req, res) => {
       redirect: 'follow'
     });
 
+    console.log(response, "response")
     if (!response.ok) {
       throw new Error('Network response was not ok ' + response.statusText);
     }
