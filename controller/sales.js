@@ -223,6 +223,7 @@ exports.postPayement = async (req, res) => {
     if (filteredProduct?.[0].paymentStatus) {
       return res.status(400).json({ message: 'Duplicate order detected' });
     }
+
     let TotalPrice = 0;
     let shippment_Fee = "";
 
@@ -258,8 +259,8 @@ exports.postPayement = async (req, res) => {
       return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
     }
     const purchaseDate = formatDate(saleRecord.date);
-    sendEmailHandler((saleRecord.first_name + " " + saleRecord.last_name), saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, TotalPrice, filteredProduct, shippment_Fee, `New Order confirmed against Order #${order_id}`, null, purchaseDate, order_id)
-    sendEmailHandler((saleRecord.first_name + " " + saleRecord.last_name), saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, TotalPrice, filteredProduct, shippment_Fee, `Order has been confirmed against Order # ${order_id}`, saleRecord.usermail, purchaseDate, order_id)
+    sendEmailHandler((saleRecord.first_name + " " + saleRecord.last_name), saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, TotalPrice, filteredProduct, shippment_Fee, `Order has been confirmed @IF against Order # ${order_id}`, null, purchaseDate, order_id)
+    sendEmailHandler((saleRecord.first_name + " " + saleRecord.last_name), saleRecord.usermail, saleRecord.phone_number, saleRecord.userAddress, `${saleRecord.city}, ${saleRecord.country}`, TotalPrice, filteredProduct, shippment_Fee, `Order has been confirmed @IF against Order # ${order_id}`, saleRecord.usermail, purchaseDate, order_id)
 
     const { products, ...without } = saleRecord
 

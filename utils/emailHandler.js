@@ -17,9 +17,9 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
 
    const mailOptions = {
       //   from:process.env.MAILER_MAIL,
-      from: `"Order Confirmation @IF" <${process.env.MAILER_MAIL}>`,
+      from: `"Order Confirmation" <${process.env.MAILER_MAIL}>`,
       to: CustomerEmail ? CustomerEmail : `${process.env.CONTACTUS_MAIL1},${process.env.CONTACTUS_MAIL2},${process.env.CONTACTUS_MAIL3},${process.env.CONTACTUS_MAIL4}`,
-      subject: subject ? subject : 'Order Confirmation',
+      subject: subject ? subject : 'Order Confirmation @IF',
       html: `<!DOCTYPE html>
 <html lang="en">
 
