@@ -350,7 +350,7 @@ const sendEmailHandler = async (name, email, phone, address, State, TotalProduct
          <p style="text-align:center;" class="order-para">Dear <b>Customer,</b></p>
          <p style="text-align:center;" class="order-para">Thank you very much for the order <br> you placed with <a
                href="https://interiorfilm.ae/">www.interiorfilm.ae</a></p>
-         <a href="#" class="order-button">View Your Order</a>
+         <a href="href="https://interiorfilm.ae/track-order/${orderId}" class="order-button">View Your Order</a>
          <p style="text-align:center;" class="order-para">Your order has now been sent to the warehouse to prepare for packing and
             dispatch.</p>
          <p style="text-align:center;" class="order-para">Our team will be in touch soon to arrange the delivery with you.</p>
